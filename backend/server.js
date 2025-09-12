@@ -4,9 +4,12 @@ require("dotenv").config();
 
 const pool = require("./db/postgres");
 const connectMongo = require("./db/mongo");
+
+// Routes
 const authRoutes = require("./routes/auth");
 const appointmentRoutes = require("./routes/appointments");
 const syncRoutes = require("./routes/sync");
+const profileRoutes = require("./routes/profile"); // ✅ add this
 
 const app = express();
 
@@ -26,6 +29,7 @@ pool.query("SELECT NOW()")
 app.use("/auth", authRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/sync", syncRoutes);
+app.use("/profile", profileRoutes); // mount profile routes
 
 // Health check route
 app.get("/", (req, res) => {

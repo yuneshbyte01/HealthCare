@@ -52,6 +52,26 @@
     "admin": "Administrator"
   },
 
+  "profile": {
+    "completeClinicStaffProfile": "Complete Clinic Staff Profile",
+    "completePatientProfile": "Complete Patient Profile",
+    "dob": "Date of Birth",
+    "phone": "Phone Number",
+    "gender": "Gender",
+    "address": "Address",
+    "medicalHistory": "Medical History",
+    "preferredLanguage": "Preferred Language",
+    "saveProfile": "Save Profile",
+    "success": "Profile completed successfully!",
+    "failed": "Failed to complete profile",
+    "position": "Position",
+    "department": "Department",
+    "workSchedule": "Work Schedule",
+    "permissions": "Permissions",
+    "completeAdminProfile": "Complete Admin Profile",
+    "myProfile": "My Profile"
+  },
+
   "offline": {
     "offlineFetchError": "Offline mode - could not fetch appointments",
     "offlineSynced": "Offline appointments synced!"

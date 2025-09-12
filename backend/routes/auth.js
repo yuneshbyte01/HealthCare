@@ -7,7 +7,7 @@ const router = express.Router();
 
 /**
  * POST /api/auth/register
- * Register a new user account.
+ * Register a new user account in the `users` table only.
  */
 router.post("/register", async (req, res) => {
   try {
@@ -18,7 +18,7 @@ router.post("/register", async (req, res) => {
 
     const result = await pool.query(
       "INSERT INTO users (name, email, password, role) VALUES ($1,$2,$3,$4) RETURNING id, name, email, role",
-      [name, email, hashed, role || "patient"] // default to "patient"
+      [name, email, hashed, role || "patient"] // default role = patient
     );
 
     res.json({ message: "User registered", user: result.rows[0] });
@@ -34,40 +34,57 @@ router.post("/register", async (req, res) => {
 /**
  * POST /api/auth/login
  * Authenticate a user and issue a JWT.
+ * Also check if the user's role-specific profile exists.
  */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Find user by email
-    const user = await pool.query("SELECT * FROM users WHERE email=$1", [email]);
-    if (!user.rows.length) {
+    const userRes = await pool.query("SELECT * FROM users WHERE email=$1", [email]);
+    if (!userRes.rows.length) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
+    const user = userRes.rows[0];
+
     // Validate password
-    const valid = await bcrypt.compare(password, user.rows[0].password);
+    const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
     // Generate JWT with id + role
     const token = jwt.sign(
-      { id: user.rows[0].id, role: user.rows[0].role },
+      { id: user.id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+
+    // Check if role-specific profile exists
+    let profileComplete = false;
+    if (user.role === "patient") {
+      const check = await pool.query("SELECT 1 FROM patients WHERE user_id=$1", [user.id]);
+      profileComplete = check.rows.length > 0;
+    } else if (user.role === "clinic_staff") {
+      const check = await pool.query("SELECT 1 FROM clinic_staff WHERE user_id=$1", [user.id]);
+      profileComplete = check.rows.length > 0;
+    } else if (user.role === "admin") {
+      const check = await pool.query("SELECT 1 FROM admins WHERE user_id=$1", [user.id]);
+      profileComplete = check.rows.length > 0;
+    }
 
     // Send token + user info back to frontend
     res.json({
       message: "Login successful",
       token,
       user: {
-        id: user.rows[0].id,
-        name: user.rows[0].name,
-        email: user.rows[0].email,
-        role: user.rows[0].role,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
       },
+      profileComplete, // frontend will use this to decide if profile form should show
     });
   } catch (err) {
     console.error("Login error:", err.message);

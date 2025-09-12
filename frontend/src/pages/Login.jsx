@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
  * Login Component
  * Renders a login form and handles user authentication.
  * - Stores JWT + role in localStorage
- * - Redirects user based on role
+ * - Redirects user based on role and profile completion status
  */
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -22,14 +22,14 @@ export default function Login() {
 
   /**
    * Handle form submission
-   * Sends login request, stores JWT + role, and redirects user by role.
+   * Sends login request, stores JWT + role, and redirects user accordingly.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await API.post("/auth/login", form);
 
-      // Save JWT + role in localStorage
+      // Save JWT + role in localStorage for authentication and RBAC
       localStorage.setItem("token", res.data.token);
       if (res.data.user?.role) {
         localStorage.setItem("role", res.data.user.role);
@@ -37,19 +37,42 @@ export default function Login() {
 
       alert(t("auth.loginSuccess"));
 
-      // Redirect based on role
-      switch (res.data.user?.role) {
-        case "patient":
-          window.location.href = "/appointments";
-          break;
-        case "clinic_staff":
-          window.location.href = "/clinic";
-          break;
-        case "admin":
-          window.location.href = "/admin";
-          break;
-        default:
-          window.location.href = "/";
+      const role = res.data.user?.role;
+
+      // Profile completion check per role
+      if (role === "patient") {
+        try {
+          const profileRes = await API.get("/profile/patient/me");
+          if (!profileRes.data) {
+            window.location.href = "/complete-patient-profile";
+          } else {
+            window.location.href = "/appointments";
+          }
+        } catch {
+          window.location.href = "/complete-patient-profile";
+        }
+      } else if (role === "clinic_staff") {
+        try {
+          const profileRes = await API.get("/profile/clinic-staff/me");
+          if (!profileRes.data) {
+            window.location.href = "/complete-clinic-staff-profile";
+          } else {
+            window.location.href = "/clinic";
+          }
+        } catch {
+          window.location.href = "/complete-clinic-staff-profile";
+        }
+      } else if (role === "admin") {
+        try {
+          const profileRes = await API.get("/profile/admin/me");
+          if (!profileRes.data) {
+            window.location.href = "/complete-admin-profile";
+          } else {
+            window.location.href = "/admin";
+          }
+        } catch {
+          window.location.href = "/complete-admin-profile";
+        }
       }
     } catch (err) {
       alert(t("auth.loginFailed"));

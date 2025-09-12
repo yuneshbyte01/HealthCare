@@ -39,19 +39,26 @@ export default function Navbar() {
 
       {/* Patient Navbar */}
       {role === "patient" && (
-        <Link to="/appointments">{t("appointments.appointments")}</Link>
+        <>
+          <Link to="/appointments">{t("appointments.appointments")}</Link> |{" "}
+          <Link to="/patient-profile">{t("profile.myProfile")}</Link>
+        </>
       )}
 
       {/* Clinic Staff Navbar */}
       {role === "clinic_staff" && (
-        <Link to="/clinic">{t("clinic.clinicDashboard")}</Link>
+        <>
+          <Link to="/clinic">{t("clinic.clinicDashboard")}</Link> |{" "}
+          <Link to="/clinic-staff-profile">{t("profile.myProfile")}</Link>
+        </>
       )}
 
       {/* Admin Navbar */}
       {role === "admin" && (
         <>
           <Link to="/clinic">{t("clinic.clinicDashboard")}</Link> |{" "}
-          <Link to="/admin">{t("admin.dashboard")}</Link>
+          <Link to="/admin">{t("admin.dashboard")}</Link> |{" "}
+          <Link to="/admin-profile">{t("profile.myProfile")}</Link>
         </>
       )}
 
