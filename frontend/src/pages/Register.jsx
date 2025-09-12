@@ -1,8 +1,10 @@
 import { useState } from "react";
 import API from "../services/api";
+import { useTranslation } from "react-i18next";
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const { t } = useTranslation();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -12,21 +14,38 @@ export default function Register() {
     e.preventDefault();
     try {
       await API.post("/auth/register", form);
-      alert("Registration successful! Please login.");
+      alert(t("registerSuccess"));
       window.location.href = "/login";
     } catch (err) {
-      alert("Registration failed");
+      alert(t("registerFailed"));
     }
   };
 
   return (
     <div>
-      <h2>Register</h2>
+      <h2>{t("register")}</h2>
       <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} required /><br/>
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required /><br/>
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required /><br/>
-        <button type="submit">Register</button>
+        <input
+          name="name"
+          placeholder={t("name")}
+          onChange={handleChange}
+          required
+        /><br/>
+        <input
+          name="email"
+          type="email"
+          placeholder={t("email")}
+          onChange={handleChange}
+          required
+        /><br/>
+        <input
+          name="password"
+          type="password"
+          placeholder={t("password")}
+          onChange={handleChange}
+          required
+        /><br/>
+        <button type="submit">{t("register")}</button>
       </form>
     </div>
   );

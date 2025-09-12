@@ -5,20 +5,21 @@ import {
   getOfflineAppointments,
   clearOfflineAppointments,
 } from "../services/offline";
+import { useTranslation } from "react-i18next";
 
 export default function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [date, setDate] = useState("");
+  const { t } = useTranslation();
 
-  // ✅ Wrap fetchAppointments in useCallback
   const fetchAppointments = useCallback(async () => {
     try {
       const res = await API.get("/appointments");
       setAppointments(res.data);
     } catch (err) {
-      console.log("Offline mode - could not fetch");
+      console.log(t("offlineFetchError"));
     }
-  }, []);
+  }, [t]);
 
   // Book appointment
   const bookAppointment = async () => {
@@ -29,7 +30,7 @@ export default function Appointments() {
     } catch (err) {
       console.log("Saving offline appointment");
       await saveOfflineAppointment(newAppt);
-      alert("Appointment saved offline, will sync later.");
+      alert(t("appointmentSavedOffline"));
     }
   };
 
@@ -39,24 +40,23 @@ export default function Appointments() {
       await API.delete(`/appointments/${id}`);
       setAppointments(appointments.filter((a) => a.id !== id));
     } catch (err) {
-      alert("Could not cancel appointment (offline mode).");
+      alert(t("cancelFailedOffline"));
     }
   };
 
-  // ✅ Wrap syncAppointments in useCallback, depends on fetchAppointments
   const syncAppointments = useCallback(async () => {
     const offline = await getOfflineAppointments();
     if (offline.length > 0) {
       try {
         await API.post("/sync", { appointments: offline });
         await clearOfflineAppointments();
-        alert("Offline appointments synced!");
+        alert(t("offlineSynced"));
         fetchAppointments();
       } catch (err) {
         console.log("Sync failed");
       }
     }
-  }, [fetchAppointments]);
+  }, [fetchAppointments, t]);
 
   // useEffect now clean
   useEffect(() => {
@@ -67,19 +67,21 @@ export default function Appointments() {
 
   return (
     <div>
-      <h2>My Appointments</h2>
+      <h2>{t("myAppointments")}</h2>
       <input
         type="datetime-local"
         value={date}
         onChange={(e) => setDate(e.target.value)}
       />
-      <button onClick={bookAppointment}>Book Appointment</button>
+      <button onClick={bookAppointment}>{t("bookAppointment")}</button>
 
       <ul>
         {appointments.map((appt) => (
           <li key={appt.id}>
             {appt.date} - {appt.status}
-            <button onClick={() => cancelAppointment(appt.id)}>Cancel</button>
+            <button onClick={() => cancelAppointment(appt.id)}>
+              {t("cancel")}
+            </button>
           </li>
         ))}
       </ul>

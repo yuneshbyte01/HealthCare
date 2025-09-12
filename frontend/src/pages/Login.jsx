@@ -1,8 +1,10 @@
 import { useState } from "react";
 import API from "../services/api";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const { t } = useTranslation();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,20 +15,32 @@ export default function Login() {
     try {
       const res = await API.post("/auth/login", form);
       localStorage.setItem("token", res.data.token);
-      alert("Login successful!");
-      window.location.href = "/appointments"; // redirect patient
+      alert(t("loginSuccess"));
+      window.location.href = "/appointments"; 
     } catch (err) {
-      alert("Login failed");
+      alert(t("loginFailed"));
     }
   };
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>{t("login")}</h2>
       <form onSubmit={handleSubmit}>
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required /><br/>
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required /><br/>
-        <button type="submit">Login</button>
+        <input
+          name="email"
+          type="email"
+          placeholder={t("email")}
+          onChange={handleChange}
+          required
+        /><br/>
+        <input
+          name="password"
+          type="password"
+          placeholder={t("password")}
+          onChange={handleChange}
+          required
+        /><br/>
+        <button type="submit">{t("login")}</button>
       </form>
     </div>
   );
