@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Appointments from "./pages/Appointments";
 import Clinic from "./pages/Clinic";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
@@ -20,8 +21,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/appointments" element={<Appointments />} />
-        <Route path="/clinic" element={<Clinic />} />
+        <Route path="/appointments" element={<PrivateRoute><Appointments /></PrivateRoute>} />
+        <Route path="/clinic" element={<PrivateRoute><Clinic /></PrivateRoute>} />
       </Routes>
     </Router>
   );
