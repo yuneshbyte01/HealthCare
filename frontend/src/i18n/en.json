@@ -7,7 +7,8 @@
     "logout": "Logout",
     "name": "Name",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "greeting": "Welcome, {{name}}"
   },
 
   "homePage": {
@@ -16,7 +17,9 @@
 
   "auth": {
     "registerSuccess": "Registration successful! Please log in.",
-    "registerFailed": "Registration failed. Please try again."
+    "registerFailed": "Registration failed. Please try again.",
+    "loginFailed": "Login failed. Please check your credentials.",
+    "loginSuccess": "Login successful! Welcome back."
   },
 
   "appointments": {
@@ -37,8 +40,30 @@
     "dailyLoad": "Daily Appointment Load"
   },
 
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "systemLogs": "System Logs",
+    "manageUsers": "Manage Users"
+  },
+
+  "roles": {
+    "patient": "Patient",
+    "clinic_staff": "Clinic Staff",
+    "admin": "Administrator"
+  },
+
   "offline": {
     "offlineFetchError": "Offline mode - could not fetch appointments",
     "offlineSynced": "Offline appointments synced!"
+  },
+
+  "errors": {
+    "networkError": "Network error. Please check your connection.",
+    "unexpectedError": "An unexpected error occurred. Please try again later."
+  },
+
+  "forbidden": {
+    "accessDenied": "403 - Access Denied",
+    "noPermission": "You do not have permission to view this page."
   }
 }

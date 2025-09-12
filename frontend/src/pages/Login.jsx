@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 /**
  * Login Component
  * Renders a login form and handles user authentication.
+ * - Stores JWT + role in localStorage
+ * - Redirects user based on role
  */
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -20,18 +22,35 @@ export default function Login() {
 
   /**
    * Handle form submission
-   * Sends login request, stores JWT token, and redirects on success.
+   * Sends login request, stores JWT + role, and redirects user by role.
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await API.post("/auth/login", form);
 
-      // Save JWT token in localStorage for authenticated requests
+      // Save JWT + role in localStorage
       localStorage.setItem("token", res.data.token);
+      if (res.data.user?.role) {
+        localStorage.setItem("role", res.data.user.role);
+      }
 
       alert(t("auth.loginSuccess"));
-      window.location.href = "/appointments"; // Redirect after success
+
+      // Redirect based on role
+      switch (res.data.user?.role) {
+        case "patient":
+          window.location.href = "/appointments";
+          break;
+        case "clinic_staff":
+          window.location.href = "/clinic";
+          break;
+        case "admin":
+          window.location.href = "/admin";
+          break;
+        default:
+          window.location.href = "/";
+      }
     } catch (err) {
       alert(t("auth.loginFailed"));
     }
@@ -47,7 +66,7 @@ export default function Login() {
           placeholder={t("common.email")}
           onChange={handleChange}
           required
-        /><br/>
+        /><br />
 
         <input
           name="password"
@@ -55,7 +74,7 @@ export default function Login() {
           placeholder={t("common.password")}
           onChange={handleChange}
           required
-        /><br/>
+        /><br />
 
         <button type="submit">{t("common.login")}</button>
       </form>

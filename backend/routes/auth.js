@@ -18,13 +18,16 @@ router.post("/register", async (req, res) => {
 
     const result = await pool.query(
       "INSERT INTO users (name, email, password, role) VALUES ($1,$2,$3,$4) RETURNING id, name, email, role",
-      [name, email, hashed, role || "patient"]
+      [name, email, hashed, role || "patient"] // default to "patient"
     );
 
     res.json({ message: "User registered", user: result.rows[0] });
   } catch (err) {
-    console.error("Registration error:", err);
-    res.status(500).json({ error: "Registration failed", details: err.message });
+    console.error("Registration error:", err.message);
+    res.status(500).json({
+      error: "Registration failed",
+      details: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 });
 
@@ -48,17 +51,30 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // Generate JWT
+    // Generate JWT with id + role
     const token = jwt.sign(
       { id: user.rows[0].id, role: user.rows[0].role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.json({ message: "Login successful", token });
+    // Send token + user info back to frontend
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user.rows[0].id,
+        name: user.rows[0].name,
+        email: user.rows[0].email,
+        role: user.rows[0].role,
+      },
+    });
   } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ error: "Login failed", details: err.message });
+    console.error("Login error:", err.message);
+    res.status(500).json({
+      error: "Login failed",
+      details: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 });
 
