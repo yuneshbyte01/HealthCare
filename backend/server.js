@@ -1,24 +1,24 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
-import pool from "./db/postgres.js";
-import connectMongo from "./db/mongo.js";
-
-// Load environment variables
-dotenv.config();
+const pool = require("./db/postgres");
+const connectMongo = require("./db/mongo");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect MongoDB
+// Connect Databases
 connectMongo();
 
-// Connect PostgreSQL
-pool.connect()
-  .then(() => console.log("✅ Postgres connected"))
-  .catch(err => console.error("❌ Postgres connection error:", err.message));
+pool.query("SELECT NOW()")
+  .then(res => console.log("Postgres connected at:", res.rows[0].now))
+  .catch(err => console.error("Postgres connection error:", err));
+
+// Routes
+app.use("/auth", authRoutes);
 
 // Test route
 app.get("/", (req, res) => {
@@ -26,4 +26,4 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
