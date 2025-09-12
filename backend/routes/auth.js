@@ -5,10 +5,15 @@ const pool = require("../db/postgres");
 
 const router = express.Router();
 
-// Register
+/**
+ * POST /api/auth/register
+ * Register a new user account.
+ */
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+
+    // Hash password before storing
     const hashed = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
@@ -18,22 +23,32 @@ router.post("/register", async (req, res) => {
 
     res.json({ message: "User registered", user: result.rows[0] });
   } catch (err) {
-    console.error("❌ Registration error:", err);
+    console.error("Registration error:", err);
     res.status(500).json({ error: "Registration failed", details: err.message });
   }
 });
 
-// Login
+/**
+ * POST /api/auth/login
+ * Authenticate a user and issue a JWT.
+ */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Find user by email
     const user = await pool.query("SELECT * FROM users WHERE email=$1", [email]);
+    if (!user.rows.length) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
 
-    if (!user.rows.length) return res.status(400).json({ error: "Invalid credentials" });
-
+    // Validate password
     const valid = await bcrypt.compare(password, user.rows[0].password);
-    if (!valid) return res.status(400).json({ error: "Invalid credentials" });
+    if (!valid) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
 
+    // Generate JWT
     const token = jwt.sign(
       { id: user.rows[0].id, role: user.rows[0].role },
       process.env.JWT_SECRET,
@@ -42,7 +57,7 @@ router.post("/login", async (req, res) => {
 
     res.json({ message: "Login successful", token });
   } catch (err) {
-    console.error("❌ Login error:", err);
+    console.error("Login error:", err);
     res.status(500).json({ error: "Login failed", details: err.message });
   }
 });

@@ -1,11 +1,21 @@
 const { Pool } = require("pg");
 
+/**
+ * PostgreSQL connection pool
+ * Uses environment variables for configuration.
+ * Example env vars:
+ *   PGUSER=postgres
+ *   PGHOST=localhost
+ *   PGDATABASE=healthcare
+ *   PGPASSWORD=yourpassword
+ *   PGPORT=5432
+ */
 const pool = new Pool({
-  user: "postgres",       // DB superuser
-  host: "localhost",      // DB server
-  database: "healthcare", // DB name
-  password: "Himal123!",  // your password
-  port: 5432,             // default Postgres port
+  user: process.env.PGUSER,       // Database user
+  host: process.env.PGHOST,       // Database host
+  database: process.env.PGDATABASE, // Database name
+  password: process.env.PGPASSWORD, // Database password
+  port: process.env.PGPORT,       // Database port
 });
 
 module.exports = pool;

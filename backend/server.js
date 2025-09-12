@@ -9,25 +9,29 @@ const appointmentRoutes = require("./routes/appointments");
 const syncRoutes = require("./routes/sync");
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Connect Databases
+// Connect to MongoDB
 connectMongo();
 
+// Verify Postgres connection
 pool.query("SELECT NOW()")
   .then(res => console.log("Postgres connected at:", res.rows[0].now))
   .catch(err => console.error("Postgres connection error:", err));
 
-// Routes
+// API Routes
 app.use("/auth", authRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/sync", syncRoutes);
 
-// Test route
+// Health check route
 app.get("/", (req, res) => {
   res.send("Healthcare Backend API is running...");
 });
 
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

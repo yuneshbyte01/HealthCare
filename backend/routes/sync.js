@@ -5,9 +5,15 @@ const Log = require("../models/Log");
 
 const router = express.Router();
 
+/**
+ * POST /api/appointments/sync
+ * Sync multiple appointments in bulk (requires authentication).
+ */
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { appointments } = req.body;
+
+    // Validate input
     if (!appointments || !Array.isArray(appointments)) {
       return res.status(400).json({ error: "Invalid request format" });
     }
@@ -15,6 +21,7 @@ router.post("/", authMiddleware, async (req, res) => {
     const syncedAppointments = [];
 
     for (let appt of appointments) {
+      // Insert or update appointment in Postgres
       const result = await pool.query(
         `INSERT INTO appointments (patient_id, date, synced, last_updated)
          VALUES ($1, $2, true, NOW())
@@ -25,14 +32,14 @@ router.post("/", authMiddleware, async (req, res) => {
       const appointmentData = result.rows[0];
       syncedAppointments.push(appointmentData);
 
-      // ✅ ensure MongoDB log is created
+      // Log sync event in MongoDB
       await Log.create({
         action: "SYNCED",
         userId: Number(appt.patient_id),
         details: { appointment: appointmentData }
       });
 
-      console.log("SYNC logged for patient:", appt.patient_id);
+      console.log("Sync logged for patient:", appt.patient_id);
     }
 
     res.json({ message: "Sync complete", syncedAppointments });

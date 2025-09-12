@@ -6,19 +6,20 @@ const Log = require("../models/Log"); // MongoDB log model
 const router = express.Router();
 
 /**
- * 📌 Book appointment
+ * POST /api/appointments
+ * Book a new appointment (requires authentication).
  */
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { date } = req.body;
-    const patient_id = req.user.id; // from JWT
+    const patient_id = req.user.id; // Extracted from JWT
 
     const result = await pool.query(
       "INSERT INTO appointments (patient_id, date) VALUES ($1, $2) RETURNING *",
       [patient_id, date]
     );
 
-    // log booking in MongoDB
+    // Log booking in MongoDB
     await Log.create({
       action: "BOOKED",
       userId: patient_id,
@@ -33,13 +34,16 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 /**
- * 📌 Get all appointments
+ * GET /api/appointments
+ * Retrieve all appointments (requires authentication).
  */
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM appointments ORDER BY date ASC");
+    const result = await pool.query(
+      "SELECT * FROM appointments ORDER BY date ASC"
+    );
 
-    // optional logging for audit
+    // Log fetch action (optional, for auditing)
     await Log.create({
       action: "FETCH_APPOINTMENTS",
       userId: req.user.id,
@@ -54,7 +58,8 @@ router.get("/", authMiddleware, async (req, res) => {
 });
 
 /**
- * 📌 Cancel appointment
+ * DELETE /api/appointments/:id
+ * Cancel an appointment by ID (requires authentication).
  */
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
@@ -67,7 +72,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
       return res.status(404).json({ error: "Appointment not found" });
     }
 
-    // log cancellation in MongoDB
+    // Log cancellation in MongoDB
     await Log.create({
       action: "CANCELLED",
       userId: req.user.id,
