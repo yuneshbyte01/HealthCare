@@ -1,27 +1,44 @@
 {
-  "welcome": "Welcome to Healthcare System",
-  "home": "Home",
-  "homeMessage": "Please login or register to continue.",
-  "login": "Login",
-  "register": "Register",
-  "logout": "Logout",
-  "appointments": "Appointments",
-  "clinicDashboard": "Clinic Dashboard",
-  "book": "Book Appointment",
-  "cancel": "Cancel",
-  "name": "Name",
-  "email": "Email",
-  "password": "Password",
-  "registerSuccess": "Registration successful! Please log in.",
-  "registerFailed": "Registration failed. Please try again.",
-  "allAppointments": "All Appointments",
-  "patient": "Patient",
-  "dailyLoad": "Daily Appointment Load",
-  "cancelFailed": "Failed to cancel appointment",
-  "myAppointments": "My Appointments",
-  "bookAppointment": "Book Appointment",
-  "offlineFetchError": "Offline mode - could not fetch appointments",
-  "appointmentSavedOffline": "Appointment saved offline, will sync later.",
-  "cancelFailedOffline": "Could not cancel appointment (offline mode).",
-  "offlineSynced": "Offline appointments synced!"
+  "common": {
+    "welcome": "Welcome to Healthcare System",
+    "home": "Home",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password"
+  },
+
+  "homePage": {
+    "homeMessage": "Please login or register to continue."
+  },
+
+  "auth": {
+    "registerSuccess": "Registration successful! Please log in.",
+    "registerFailed": "Registration failed. Please try again."
+  },
+
+  "appointments": {
+    "appointments": "Appointments",
+    "myAppointments": "My Appointments",
+    "book": "Book Appointment",
+    "bookAppointment": "Book Appointment",
+    "cancel": "Cancel",
+    "cancelFailed": "Failed to cancel appointment",
+    "cancelFailedOffline": "Could not cancel appointment (offline mode).",
+    "appointmentSavedOffline": "Appointment saved offline, will sync later."
+  },
+
+  "clinic": {
+    "clinicDashboard": "Clinic Dashboard",
+    "allAppointments": "All Appointments",
+    "patient": "Patient",
+    "dailyLoad": "Daily Appointment Load"
+  },
+
+  "offline": {
+    "offlineFetchError": "Offline mode - could not fetch appointments",
+    "offlineSynced": "Offline appointments synced!"
+  }
 }

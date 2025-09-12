@@ -1,10 +1,17 @@
 import axios from "axios";
 
+/**
+ * Axios instance
+ * Configured with base backend URL and JWT token support.
+ */
 const API = axios.create({
-  baseURL: "http://localhost:5000", // backend URL
+  baseURL: "http://localhost:5000", // Backend API base URL
 });
 
-// Attach JWT token for protected routes
+/**
+ * Request interceptor
+ * Automatically attaches JWT token (if present) to protected requests.
+ */
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
   if (token) {

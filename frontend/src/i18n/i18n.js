@@ -3,16 +3,20 @@ import { initReactI18next } from "react-i18next";
 import en from "./en.json";
 import np from "./np.json";
 
+/**
+ * i18n Configuration
+ * Sets up internationalization with English and Nepali translations.
+ */
 i18n
-  .use(initReactI18next)
+  .use(initReactI18next) // Connects i18n with React
   .init({
     resources: {
-      en: { translation: en },
-      np: { translation: np }
+      en: { translation: en }, // English translations
+      np: { translation: np }, // Nepali translations
     },
-    lng: "en", // default language
-    fallbackLng: "en",
-    interpolation: { escapeValue: false }
+    lng: "en", // Default language
+    fallbackLng: "en", // Fallback if translation is missing
+    interpolation: { escapeValue: false }, // React already escapes values
   });
 
 export default i18n;
