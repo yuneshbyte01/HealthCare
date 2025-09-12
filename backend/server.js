@@ -5,6 +5,7 @@ require("dotenv").config();
 const pool = require("./db/postgres");
 const connectMongo = require("./db/mongo");
 const authRoutes = require("./routes/auth");
+const appointmentRoutes = require("./routes/appointments");
 
 const app = express();
 app.use(cors());
@@ -19,6 +20,7 @@ pool.query("SELECT NOW()")
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/appointments", appointmentRoutes);
 
 // Test route
 app.get("/", (req, res) => {
