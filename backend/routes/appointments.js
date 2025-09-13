@@ -29,12 +29,17 @@ router.post("/test-ai", async (req, res) => {
     }
 
     try {
-      // --- Call AI no-show predictor ---
-      const noshowRes = await axios.post("http://localhost:6000/noshow", { patient_id, date });
+      // --- Call ML-based no-show predictor ---
+      const noshowRes = await axios.post("http://localhost:6000/noshow-ml", {
+        age: 65, // Default age - can be enhanced to get from patient profile
+        distance: 10, // Default distance in km - can be enhanced with real location data
+        history_missed: 0, // Default - can be enhanced to get from patient history
+        weather_bad: 0 // Default - can be enhanced with real weather API
+      });
       noShowRisk = noshowRes.data.no_show_risk;
-      console.log("AI No-show response:", noshowRes.data);
+      console.log("ML No-show response:", noshowRes.data);
     } catch (aiError) {
-      console.warn("AI no-show service unavailable:", aiError.message);
+      console.warn("ML no-show service unavailable:", aiError.message);
     }
 
     res.json({
@@ -85,11 +90,17 @@ router.post(
       }
 
       try {
-        // --- Call AI no-show predictor ---
-        const noshowRes = await axios.post("http://localhost:6000/noshow", { patient_id, date });
+        // --- Call ML-based no-show predictor ---
+        const noshowRes = await axios.post("http://localhost:6000/noshow-ml", {
+          age: 65, // Default age - can be enhanced to get from patient profile
+          distance: 10, // Default distance in km - can be enhanced with real location data
+          history_missed: 0, // Default - can be enhanced to get from patient history
+          weather_bad: 0 // Default - can be enhanced with real weather API
+        });
         noShowRisk = noshowRes.data.no_show_risk;
+        console.log("ML No-show response:", noshowRes.data);
       } catch (aiError) {
-        console.warn("AI no-show service unavailable, using default risk:", aiError.message);
+        console.warn("ML no-show service unavailable, using default risk:", aiError.message);
       }
 
       console.log("Booking appointment for patient:", patient_id, "with AI data:", { urgency, noShowRisk });
