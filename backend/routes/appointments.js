@@ -3,8 +3,49 @@ const pool = require("../db/postgres");
 const authMiddleware = require("../middleware/auth"); // estructured import
 const roleMiddleware = require("../middleware/role");     // role-based access
 const Log = require("../models/Log");
+const axios = require("axios");
 
 const router = express.Router();
+
+// Test endpoint for AI integration (no auth required)
+router.post("/test-ai", async (req, res) => {
+  try {
+    const { symptoms, patient_id, date } = req.body;
+    
+    let urgency = 'routine';
+    let noShowRisk = 0.5;
+
+    try {
+      // --- Call AI triage service ---
+      const triageRes = await axios.post("http://localhost:6000/triage", { symptoms: symptoms || "" });
+      urgency = triageRes.data.urgency;
+      console.log("AI Triage response:", triageRes.data);
+    } catch (aiError) {
+      console.warn("AI triage service unavailable:", aiError.message);
+    }
+
+    try {
+      // --- Call AI no-show predictor ---
+      const noshowRes = await axios.post("http://localhost:6000/noshow", { patient_id, date });
+      noShowRisk = noshowRes.data.no_show_risk;
+      console.log("AI No-show response:", noshowRes.data);
+    } catch (aiError) {
+      console.warn("AI no-show service unavailable:", aiError.message);
+    }
+
+    res.json({
+      message: "AI integration test successful",
+      urgency,
+      noShowRisk,
+      symptoms,
+      patient_id,
+      date
+    });
+  } catch (err) {
+    console.error("Error testing AI integration:", err.message);
+    res.status(500).json({ error: "AI integration test failed", details: err.message });
+  }
+});
 
 /**
  * POST /api/appointments
@@ -16,19 +57,38 @@ router.post(
   roleMiddleware(["patient"]),
   async (req, res) => {
     try {
-      const { date, staff_id, clinic_id, urgency } = req.body;
+      const { date, staff_id, clinic_id, symptoms } = req.body;
       if (!date) {
         return res.status(400).json({ error: "Date is required" });
       }
 
       const patient_id = req.user.id;
 
-      console.log("Booking appointment for patient:", patient_id, "with data:", { staff_id, clinic_id, date, urgency });
+      let urgency = 'routine';
+      let noShowRisk = 0.5;
+
+      try {
+        // --- Call AI triage service ---
+        const triageRes = await axios.post("http://localhost:6000/triage", { symptoms: symptoms || "" });
+        urgency = triageRes.data.urgency;
+      } catch (aiError) {
+        console.warn("AI triage service unavailable, using default urgency:", aiError.message);
+      }
+
+      try {
+        // --- Call AI no-show predictor ---
+        const noshowRes = await axios.post("http://localhost:6000/noshow", { patient_id, date });
+        noShowRisk = noshowRes.data.no_show_risk;
+      } catch (aiError) {
+        console.warn("AI no-show service unavailable, using default risk:", aiError.message);
+      }
+
+      console.log("Booking appointment for patient:", patient_id, "with AI data:", { urgency, noShowRisk });
       
       const result = await pool.query(
-        `INSERT INTO appointments (patient_id, staff_id, clinic_id, date, urgency, status) 
-         VALUES ($1, $2, $3, $4, $5, 'scheduled') RETURNING *`,
-        [patient_id, staff_id, clinic_id, date, urgency || 'routine']
+        `INSERT INTO appointments (patient_id, staff_id, clinic_id, date, urgency, no_show_risk, status) 
+         VALUES ($1, $2, $3, $4, $5, $6, 'scheduled') RETURNING *`,
+        [patient_id, staff_id, clinic_id, date, urgency, noShowRisk]
       );
       
       console.log("Appointment created:", result.rows[0]);
@@ -37,7 +97,7 @@ router.post(
         action: "BOOKED",
         userId: patient_id,
         role: req.user.role,
-        details: { appointment: result.rows[0] },
+        details: { appointment: result.rows[0], urgency, noShowRisk },
       });
 
       res.json(result.rows[0]);
