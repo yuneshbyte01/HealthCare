@@ -41,6 +41,7 @@ export default function Navbar() {
       {role === "patient" && (
         <>
           <Link to="/appointments">{t("appointments.appointments")}</Link> |{" "}
+          <Link to="/dashboard">📊 Dashboard</Link> |{" "}
           <Link to="/patient-profile">{t("profile.myProfile")}</Link>
         </>
       )}
@@ -49,6 +50,7 @@ export default function Navbar() {
       {role === "clinic_staff" && (
         <>
           <Link to="/clinic">{t("clinic.clinicDashboard")}</Link> |{" "}
+          <Link to="/dashboard">📊 Dashboard</Link> |{" "}
           <Link to="/clinic-staff-profile">{t("profile.myProfile")}</Link>
         </>
       )}
@@ -58,6 +60,7 @@ export default function Navbar() {
         <>
           <Link to="/clinic">{t("clinic.clinicDashboard")}</Link> |{" "}
           <Link to="/admin">{t("admin.dashboard")}</Link> |{" "}
+          <Link to="/dashboard">📊 Dashboard</Link> |{" "}
           <Link to="/admin-profile">{t("profile.myProfile")}</Link>
         </>
       )}
