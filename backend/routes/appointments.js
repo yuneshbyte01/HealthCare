@@ -16,12 +16,16 @@ router.post("/test-ai", async (req, res) => {
     let noShowRisk = 0.5;
 
     try {
-      // --- Call AI triage service ---
-      const triageRes = await axios.post("http://localhost:6000/triage", { symptoms: symptoms || "" });
+      // --- Call ML-based triage service ---
+      const triageRes = await axios.post("http://localhost:6000/ml-triage", {
+        age: 65, // Default age - can be enhanced to get from patient profile
+        fever: (symptoms || "").toLowerCase().includes("fever"),
+        chestpain: (symptoms || "").toLowerCase().includes("chest pain")
+      });
       urgency = triageRes.data.urgency;
-      console.log("AI Triage response:", triageRes.data);
+      console.log("ML Triage response:", triageRes.data);
     } catch (aiError) {
-      console.warn("AI triage service unavailable:", aiError.message);
+      console.warn("ML triage service unavailable:", aiError.message);
     }
 
     try {
@@ -68,11 +72,16 @@ router.post(
       let noShowRisk = 0.5;
 
       try {
-        // --- Call AI triage service ---
-        const triageRes = await axios.post("http://localhost:6000/triage", { symptoms: symptoms || "" });
+        // --- Call ML-based triage service ---
+        const triageRes = await axios.post("http://localhost:6000/ml-triage", {
+          age: 65, // Default age - can be enhanced to get from patient profile
+          fever: (symptoms || "").toLowerCase().includes("fever"),
+          chestpain: (symptoms || "").toLowerCase().includes("chest pain")
+        });
         urgency = triageRes.data.urgency;
+        console.log("ML Triage response:", triageRes.data);
       } catch (aiError) {
-        console.warn("AI triage service unavailable, using default urgency:", aiError.message);
+        console.warn("ML triage service unavailable, using default urgency:", aiError.message);
       }
 
       try {
