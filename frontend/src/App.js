@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Appointments from "./pages/Appointments";
 import Dashboard from "./pages/Dashboard";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import Clinic from "./pages/Clinic";
 import Admin from "./pages/Admin";
 import Forbidden from "./pages/Forbidden";
@@ -80,6 +81,14 @@ function App() {
           element={
             <PrivateRoute roles={["patient", "clinic_staff", "admin"]}>
               <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <PrivateRoute roles={["clinic_staff", "admin"]}>
+              <AnalyticsDashboard />
             </PrivateRoute>
           }
         />

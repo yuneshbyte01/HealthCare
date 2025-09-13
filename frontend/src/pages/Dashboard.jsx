@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import API from "../services/api";
 
 /**
@@ -97,10 +98,27 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>📊 Dashboard - AI Insights</h2>
-      <p style={{ color: "#666", marginBottom: "20px" }}>
-        View your appointments with AI-powered urgency assessment and no-show risk prediction
-      </p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <div>
+          <h2>📊 Dashboard - AI Insights</h2>
+          <p style={{ color: "#666", margin: "0" }}>
+            View your appointments with AI-powered urgency assessment and no-show risk prediction
+          </p>
+        </div>
+        <Link 
+          to="/analytics" 
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#4caf50",
+            color: "white",
+            textDecoration: "none",
+            borderRadius: "4px",
+            fontWeight: "500"
+          }}
+        >
+          📈 View Analytics
+        </Link>
+      </div>
 
       {appointments.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>

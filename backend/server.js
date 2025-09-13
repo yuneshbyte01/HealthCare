@@ -11,6 +11,7 @@ const appointmentRoutes = require("./routes/appointments");
 const syncRoutes = require("./routes/sync");
 const profileRoutes = require("./routes/profile");
 const aiRoutes = require("./routes/ai");
+const analyticsRoutes = require("./routes/analytics");
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/appointments", appointmentRoutes);
 app.use("/sync", syncRoutes);
 app.use("/profile", profileRoutes);
 app.use("/ai", aiRoutes);
+app.use("/analytics", analyticsRoutes);
 
 // Health check route
 app.get("/", (req, res) => {

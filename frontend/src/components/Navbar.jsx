@@ -51,6 +51,7 @@ export default function Navbar() {
         <>
           <Link to="/clinic">{t("clinic.clinicDashboard")}</Link> |{" "}
           <Link to="/dashboard">📊 Dashboard</Link> |{" "}
+          <Link to="/analytics">📈 Analytics</Link> |{" "}
           <Link to="/clinic-staff-profile">{t("profile.myProfile")}</Link>
         </>
       )}
@@ -61,6 +62,7 @@ export default function Navbar() {
           <Link to="/clinic">{t("clinic.clinicDashboard")}</Link> |{" "}
           <Link to="/admin">{t("admin.dashboard")}</Link> |{" "}
           <Link to="/dashboard">📊 Dashboard</Link> |{" "}
+          <Link to="/analytics">📈 Analytics</Link> |{" "}
           <Link to="/admin-profile">{t("profile.myProfile")}</Link>
         </>
       )}
