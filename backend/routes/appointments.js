@@ -96,8 +96,13 @@ router.post(
       await Log.create({
         action: "BOOKED",
         userId: patient_id,
-        role: req.user.role,
-        details: { appointment: result.rows[0], urgency, noShowRisk },
+        details: {
+          appointment: result.rows[0],
+          ai_results: {
+            urgency: urgency,
+            no_show_risk: noShowRisk
+          }
+        }
       });
 
       res.json(result.rows[0]);
