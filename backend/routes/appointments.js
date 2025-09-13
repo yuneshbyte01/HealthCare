@@ -16,16 +16,15 @@ router.post("/test-ai", async (req, res) => {
     let noShowRisk = 0.5;
 
     try {
-      // --- Call ML-based triage service ---
-      const triageRes = await axios.post("http://localhost:6000/ml-triage", {
+      // --- Call NLP-based triage service (supports multilingual symptoms) ---
+      const triageRes = await axios.post("http://localhost:6000/nlp-triage", {
         age: 65, // Default age - can be enhanced to get from patient profile
-        fever: (symptoms || "").toLowerCase().includes("fever"),
-        chestpain: (symptoms || "").toLowerCase().includes("chest pain")
+        symptoms: symptoms || ""
       });
       urgency = triageRes.data.urgency;
-      console.log("ML Triage response:", triageRes.data);
+      console.log("NLP Triage response:", triageRes.data);
     } catch (aiError) {
-      console.warn("ML triage service unavailable:", aiError.message);
+      console.warn("NLP triage service unavailable:", aiError.message);
     }
 
     try {
@@ -77,16 +76,28 @@ router.post(
       let noShowRisk = 0.5;
 
       try {
-        // --- Call ML-based triage service ---
-        const triageRes = await axios.post("http://localhost:6000/ml-triage", {
+        // --- Call NLP-based triage service (supports multilingual symptoms) ---
+        const triageRes = await axios.post("http://localhost:6000/nlp-triage", {
           age: 65, // Default age - can be enhanced to get from patient profile
-          fever: (symptoms || "").toLowerCase().includes("fever"),
-          chestpain: (symptoms || "").toLowerCase().includes("chest pain")
+          symptoms: symptoms || ""
         });
         urgency = triageRes.data.urgency;
-        console.log("ML Triage response:", triageRes.data);
+        console.log("NLP Triage response:", triageRes.data);
       } catch (aiError) {
-        console.warn("ML triage service unavailable, using default urgency:", aiError.message);
+        console.warn("NLP triage service unavailable, trying fallback ML triage:", aiError.message);
+        
+        // Fallback to ML triage if NLP fails
+        try {
+          const fallbackRes = await axios.post("http://localhost:6000/ml-triage", {
+            age: 65,
+            fever: (symptoms || "").toLowerCase().includes("fever"),
+            chestpain: (symptoms || "").toLowerCase().includes("chest pain")
+          });
+          urgency = fallbackRes.data.urgency;
+          console.log("Fallback ML Triage response:", fallbackRes.data);
+        } catch (fallbackError) {
+          console.warn("Both NLP and ML triage services unavailable, using default urgency:", fallbackError.message);
+        }
       }
 
       try {
