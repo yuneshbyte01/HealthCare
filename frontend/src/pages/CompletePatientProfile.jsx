@@ -13,12 +13,13 @@ export default function CompletePatientProfile() {
   const { t, i18n } = useTranslation();
 
   const [form, setForm] = useState({
-    dob: "",
-    phone_number: "",
+    date_of_birth: "",
     gender: "",
     address: "",
-    medical_history: "",
-    preferred_language: "en",
+    blood_group: "",
+    allergies: "",
+    chronic_conditions: "",
+    emergency_contact: "",
   });
 
   /**
@@ -48,7 +49,6 @@ export default function CompletePatientProfile() {
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
     i18n.changeLanguage(lang); // update UI immediately
-    setForm({ ...form, preferred_language: lang });
   };
 
   return (
@@ -57,54 +57,79 @@ export default function CompletePatientProfile() {
       <form onSubmit={handleSubmit}>
         <label>{t("profile.dob")}:</label><br />
         <input
-          name="dob"
+          name="date_of_birth"
           type="date"
-          value={form.dob}
-          onChange={handleChange}
-          required
-        /><br />
-
-        <label>{t("profile.phone")}:</label><br />
-        <input
-          name="phone_number"
-          type="text"
-          placeholder={t("profile.phone")}
-          value={form.phone_number}
+          value={form.date_of_birth}
           onChange={handleChange}
           required
         /><br />
 
         <label>{t("profile.gender")}:</label><br />
-        <input
+        <select
           name="gender"
-          type="text"
-          placeholder={t("profile.gender")}
           value={form.gender}
           onChange={handleChange}
           required
-        /><br />
+        >
+          <option value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select><br />
 
         <label>{t("profile.address")}:</label><br />
-        <input
+        <textarea
           name="address"
-          type="text"
           placeholder={t("profile.address")}
           value={form.address}
           onChange={handleChange}
         /><br />
 
-        <label>{t("profile.medicalHistory")}:</label><br />
+        <label>Blood Group:</label><br />
+        <select
+          name="blood_group"
+          value={form.blood_group}
+          onChange={handleChange}
+        >
+          <option value="">Select Blood Group</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+        </select><br />
+
+        <label>Allergies:</label><br />
         <textarea
-          name="medical_history"
-          placeholder={t("profile.medicalHistory")}
-          value={form.medical_history}
+          name="allergies"
+          placeholder="List any allergies"
+          value={form.allergies}
+          onChange={handleChange}
+        /><br />
+
+        <label>Chronic Conditions:</label><br />
+        <textarea
+          name="chronic_conditions"
+          placeholder="List any chronic conditions"
+          value={form.chronic_conditions}
+          onChange={handleChange}
+        /><br />
+
+        <label>Emergency Contact:</label><br />
+        <input
+          name="emergency_contact"
+          type="text"
+          placeholder="Emergency contact number"
+          value={form.emergency_contact}
           onChange={handleChange}
         /><br />
 
         <label>{t("profile.preferredLanguage")}:</label><br />
         <select
           name="preferred_language"
-          value={form.preferred_language}
           onChange={handleLanguageChange}
         >
           <option value="en">English</option>

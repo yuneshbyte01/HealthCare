@@ -16,6 +16,10 @@ import { useTranslation } from "react-i18next";
 export default function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [date, setDate] = useState("");
+  const [staffId, setStaffId] = useState("");
+  const [clinicId, setClinicId] = useState("");
+  const [urgency, setUrgency] = useState("routine");
+  const [loading, setLoading] = useState(false); // loading state for AI
   const { t } = useTranslation();
 
   /**
@@ -25,8 +29,10 @@ export default function Appointments() {
   const fetchAppointments = useCallback(async () => {
     try {
       const res = await API.get("/appointments");
+      console.log("Fetched appointments:", res.data);
       setAppointments(res.data);
     } catch (err) {
+      console.error("Error fetching appointments:", err);
       console.log(t("offline.offlineFetchError"));
     }
   }, [t]);
@@ -37,11 +43,30 @@ export default function Appointments() {
    * - If offline: store locally for later sync.
    */
   const bookAppointment = async () => {
-    const newAppt = { date };
+    if (!date) {
+      alert("Please select a date before booking.");
+      return;
+    }
+    
+    const newAppt = { 
+      date, 
+      staff_id: staffId || null, 
+      clinic_id: clinicId || null, 
+      urgency 
+    };
+    
+    console.log("Booking appointment:", newAppt);
+    
     try {
       const res = await API.post("/appointments", newAppt);
+      console.log("Appointment booked successfully:", res.data);
       setAppointments([...appointments, res.data]);
+      setDate(""); // reset
+      setStaffId("");
+      setClinicId("");
+      setUrgency("routine");
     } catch (err) {
+      console.error("Error booking appointment:", err);
       console.log("Saving offline appointment");
       await saveOfflineAppointment(newAppt);
       alert(t("appointments.appointmentSavedOffline"));
@@ -80,6 +105,35 @@ export default function Appointments() {
   }, [fetchAppointments, t]);
 
   /**
+   * Ask backend AI service for suggested slot
+   */
+  const suggestSlot = async () => {
+    if (!date) {
+      alert("Please pick a preferred date first.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await API.post("/ai/suggest-appointment", {
+        preferred_date: date,
+      });
+
+      if (res.data.suggested_date) {
+        const suggested = new Date(res.data.suggested_date).toLocaleString();
+        if (window.confirm(`AI suggests: ${suggested}. Do you want to use it?`)) {
+          setDate(res.data.suggested_date);
+        }
+      } else {
+        alert("No AI suggestions available.");
+      }
+    } catch (err) {
+      alert("AI service unavailable.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
    * Lifecycle:
    * - Fetch appointments on mount
    * - Add event listener for "online" to trigger sync
@@ -96,24 +150,70 @@ export default function Appointments() {
       <h2>{t("appointments.myAppointments")}</h2>
 
       {/* Booking form */}
-      <input
-        type="datetime-local"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-      />
+      <div>
+        <label>Date & Time:</label>
+        <input
+          type="datetime-local"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+      </div>
+      
+      <div>
+        <label>Staff ID (Optional):</label>
+        <input
+          type="number"
+          value={staffId}
+          onChange={(e) => setStaffId(e.target.value)}
+          placeholder="Staff member ID"
+        />
+      </div>
+      
+      <div>
+        <label>Clinic ID (Optional):</label>
+        <input
+          type="number"
+          value={clinicId}
+          onChange={(e) => setClinicId(e.target.value)}
+          placeholder="Clinic ID"
+        />
+      </div>
+      
+      <div>
+        <label>Urgency:</label>
+        <select
+          value={urgency}
+          onChange={(e) => setUrgency(e.target.value)}
+        >
+          <option value="routine">Routine</option>
+          <option value="moderate">Moderate</option>
+          <option value="urgent">Urgent</option>
+        </select>
+      </div>
+      
+      <button onClick={suggestSlot} disabled={loading}>
+        {loading ? "AI Suggesting..." : "AI Suggest"}
+      </button>
       <button onClick={bookAppointment}>{t("appointments.bookAppointment")}</button>
 
       {/* Appointments list */}
-      <ul>
-        {appointments.map((appt) => (
-          <li key={appt.id}>
-            {appt.date} - {appt.status}
-            <button onClick={() => cancelAppointment(appt.id)}>
-              {t("appointments.cancel")}
-            </button>
-          </li>
-        ))}
-      </ul>
+      {appointments.length === 0 ? (
+        <p>No appointments found. Book your first appointment above!</p>
+      ) : (
+        <ul>
+          {appointments.map((appt) => (
+            <li key={appt.id}>
+              <strong>{new Date(appt.date).toLocaleString()}</strong><br />
+              Status: {appt.status} | Urgency: {appt.urgency || 'routine'}<br />
+              {appt.staff_id && `Staff ID: ${appt.staff_id}`}<br />
+              {appt.clinic_id && `Clinic ID: ${appt.clinic_id}`}<br />
+              <button onClick={() => cancelAppointment(appt.id)}>
+                {t("appointments.cancel")}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

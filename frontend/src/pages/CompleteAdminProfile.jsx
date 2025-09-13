@@ -12,14 +12,25 @@ export default function CompleteAdminProfile() {
   const { t } = useTranslation();
 
   const [form, setForm] = useState({
-    permissions: "full",
-    super_admin: false,
+    permissions: {"manage_users": true, "delete_logs": false},
+    notes: "",
   });
 
   // Handle input changes
   const handleChange = (e) => {
-    const { name, type, value, checked } = e.target;
-    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  // Handle permission changes
+  const handlePermissionChange = (permission, value) => {
+    setForm({
+      ...form,
+      permissions: {
+        ...form.permissions,
+        [permission]: value
+      }
+    });
   };
 
   // Submit form
@@ -38,25 +49,33 @@ export default function CompleteAdminProfile() {
     <div>
       <h2>{t("profile.completeAdminProfile")}</h2>
       <form onSubmit={handleSubmit}>
-        <label>{t("profile.permissions")}:</label><br />
-        <select
-          name="permissions"
-          value={form.permissions}
-          onChange={handleChange}
-        >
-          <option value="full">Full</option>
-          <option value="read-only">Read Only</option>
-        </select><br /><br />
+        <label>Admin Permissions:</label><br />
+        
+        <label>
+          <input
+            type="checkbox"
+            checked={form.permissions.manage_users}
+            onChange={(e) => handlePermissionChange('manage_users', e.target.checked)}
+          />
+          Manage Users
+        </label><br />
 
         <label>
           <input
             type="checkbox"
-            name="super_admin"
-            checked={form.super_admin}
-            onChange={handleChange}
+            checked={form.permissions.delete_logs}
+            onChange={(e) => handlePermissionChange('delete_logs', e.target.checked)}
           />
-          Super Admin
+          Delete Logs
         </label><br /><br />
+
+        <label>Notes:</label><br />
+        <textarea
+          name="notes"
+          placeholder="Additional notes or comments"
+          value={form.notes}
+          onChange={handleChange}
+        /><br /><br />
 
         <button type="submit">{t("profile.saveProfile")}</button>
       </form>

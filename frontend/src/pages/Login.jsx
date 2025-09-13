@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
  */
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   /**
    * Handle input changes
@@ -29,10 +29,18 @@ export default function Login() {
     try {
       const res = await API.post("/auth/login", form);
 
-      // Save JWT + role in localStorage for authentication and RBAC
+      // Save JWT + user info in localStorage for authentication and RBAC
       localStorage.setItem("token", res.data.token);
       if (res.data.user?.role) {
         localStorage.setItem("role", res.data.user.role);
+      }
+      if (res.data.user?.preferred_language) {
+        localStorage.setItem("preferred_language", res.data.user.preferred_language);
+        // Switch UI language to user's preference
+        i18n.changeLanguage(res.data.user.preferred_language);
+      }
+      if (res.data.user?.phone) {
+        localStorage.setItem("phone", res.data.user.phone);
       }
 
       alert(t("auth.loginSuccess"));
@@ -82,6 +90,16 @@ export default function Login() {
   return (
     <div>
       <h2>{t("common.login")}</h2>
+      
+      {/* Language Switcher */}
+      <div style={{ marginBottom: "10px" }}>
+        <label>Language: </label>
+        <select onChange={(e) => i18n.changeLanguage(e.target.value)}>
+          <option value="en">English</option>
+          <option value="np">Nepali</option>
+        </select>
+      </div>
+      
       <form onSubmit={handleSubmit}>
         <input
           name="email"

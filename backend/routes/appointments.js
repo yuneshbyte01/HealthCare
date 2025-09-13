@@ -16,17 +16,22 @@ router.post(
   roleMiddleware(["patient"]),
   async (req, res) => {
     try {
-      const { date } = req.body;
+      const { date, staff_id, clinic_id, urgency } = req.body;
       if (!date) {
         return res.status(400).json({ error: "Date is required" });
       }
 
       const patient_id = req.user.id;
 
+      console.log("Booking appointment for patient:", patient_id, "with data:", { staff_id, clinic_id, date, urgency });
+      
       const result = await pool.query(
-        "INSERT INTO appointments (patient_id, date) VALUES ($1, $2) RETURNING *",
-        [patient_id, date]
+        `INSERT INTO appointments (patient_id, staff_id, clinic_id, date, urgency, status) 
+         VALUES ($1, $2, $3, $4, $5, 'scheduled') RETURNING *`,
+        [patient_id, staff_id, clinic_id, date, urgency || 'routine']
       );
+      
+      console.log("Appointment created:", result.rows[0]);
 
       await Log.create({
         action: "BOOKED",
@@ -57,12 +62,16 @@ router.get(
       let result;
 
       if (req.user.role === "patient") {
+        console.log("Fetching appointments for patient ID:", req.user.id);
         result = await pool.query(
           "SELECT * FROM appointments WHERE patient_id=$1 ORDER BY date ASC",
           [req.user.id]
         );
+        console.log("Patient appointments found:", result.rows.length);
       } else {
+        console.log("Fetching all appointments for staff/admin");
         result = await pool.query("SELECT * FROM appointments ORDER BY date ASC");
+        console.log("All appointments found:", result.rows.length);
       }
 
       await Log.create({

@@ -13,11 +13,10 @@ export default function CompleteClinicStaffProfile() {
 
   const [form, setForm] = useState({
     position: "",
-    department: "",
-    phone_number: "",
-    work_schedule: "",
-    permissions: "basic",
-    preferred_language: "en",
+    specialization: "",
+    license_number: "",
+    experience_years: "",
+    clinic_id: "",
   });
 
   // Handle input changes
@@ -29,7 +28,6 @@ export default function CompleteClinicStaffProfile() {
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
     i18n.changeLanguage(lang); // switch UI immediately
-    setForm({ ...form, preferred_language: lang });
   };
 
   // Handle form submission
@@ -49,55 +47,59 @@ export default function CompleteClinicStaffProfile() {
       <h2>{t("profile.completeClinicStaffProfile")}</h2>
       <form onSubmit={handleSubmit}>
         <label>{t("profile.position")}:</label><br />
-        <input
+        <select
           name="position"
-          type="text"
           value={form.position}
           onChange={handleChange}
           required
-        /><br />
-
-        <label>{t("profile.department")}:</label><br />
-        <input
-          name="department"
-          type="text"
-          value={form.department}
-          onChange={handleChange}
-          required
-        /><br />
-
-        <label>{t("profile.phone")}:</label><br />
-        <input
-          name="phone_number"
-          type="text"
-          value={form.phone_number}
-          onChange={handleChange}
-          required
-        /><br />
-
-        <label>{t("profile.workSchedule")}:</label><br />
-        <input
-          name="work_schedule"
-          type="text"
-          value={form.work_schedule}
-          onChange={handleChange}
-        /><br />
-
-        <label>{t("profile.permissions")}:</label><br />
-        <select
-          name="permissions"
-          value={form.permissions}
-          onChange={handleChange}
         >
-          <option value="basic">Basic</option>
-          <option value="editor">Editor</option>
-          <option value="admin">Admin</option>
+          <option value="">Select Position</option>
+          <option value="doctor">Doctor</option>
+          <option value="nurse">Nurse</option>
+          <option value="assistant">Assistant</option>
         </select><br />
+
+        <label>Specialization:</label><br />
+        <input
+          name="specialization"
+          type="text"
+          placeholder="Medical specialization"
+          value={form.specialization}
+          onChange={handleChange}
+        /><br />
+
+        <label>License Number:</label><br />
+        <input
+          name="license_number"
+          type="text"
+          placeholder="Professional license number"
+          value={form.license_number}
+          onChange={handleChange}
+        /><br />
+
+        <label>Experience (Years):</label><br />
+        <input
+          name="experience_years"
+          type="number"
+          min="0"
+          placeholder="Years of experience"
+          value={form.experience_years}
+          onChange={handleChange}
+        /><br />
+
+        <label>Clinic ID:</label><br />
+        <input
+          name="clinic_id"
+          type="number"
+          placeholder="Assigned clinic ID"
+          value={form.clinic_id}
+          onChange={handleChange}
+          required
+        /><br />
 
         <label>{t("profile.preferredLanguage")}:</label><br />
         <select
           name="preferred_language"
-          value={form.preferred_language}
           onChange={handleLanguageChange}
         >
           <option value="en">English</option>

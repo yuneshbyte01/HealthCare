@@ -14,3 +14,10 @@ frontend/.env
 # OS junk
 .DS_Store
 Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Python
+ai_Service/.venv/

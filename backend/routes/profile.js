@@ -10,15 +10,15 @@ const router = express.Router();
  */
 router.post("/patient", authMiddleware, async (req, res) => {
   try {
-    const { phone_number, address, dob, gender, medical_history, preferred_language } = req.body;
+    const { date_of_birth, gender, address, blood_group, allergies, chronic_conditions, emergency_contact } = req.body;
     const userId = req.user.id;
 
     // Insert into patients table
     await pool.query(
       `INSERT INTO patients 
-   (user_id, phone_number, address, dob, gender, medical_history, preferred_language) 
-   VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [userId, phone_number, address, dob, gender, medical_history, preferred_language || "en"]
+       (patient_id, date_of_birth, gender, address, blood_group, allergies, chronic_conditions, emergency_contact) 
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+      [userId, date_of_birth, gender, address, blood_group, allergies, chronic_conditions, emergency_contact]
     );
 
     res.json({ message: "Patient profile created successfully" });
@@ -34,21 +34,21 @@ router.post("/patient", authMiddleware, async (req, res) => {
  */
 router.post("/clinic-staff", authMiddleware, async (req, res) => {
   try {
-    const { position, department, phone_number, work_schedule, permissions } = req.body;
+    const { position, specialization, license_number, experience_years, clinic_id } = req.body;
     const userId = req.user.id;
 
     // Insert into clinic_staff table
     await pool.query(
       `INSERT INTO clinic_staff 
-       (user_id, position, department, phone_number, work_schedule, permissions) 
+       (staff_id, position, specialization, license_number, experience_years, clinic_id) 
        VALUES ($1,$2,$3,$4,$5,$6)`,
       [
         userId,
         position,
-        department,
-        phone_number,
-        work_schedule,
-        permissions || "basic"
+        specialization,
+        license_number,
+        experience_years,
+        clinic_id
       ]
     );
 
@@ -65,16 +65,16 @@ router.post("/clinic-staff", authMiddleware, async (req, res) => {
  */
 router.post("/admin", authMiddleware, async (req, res) => {
   try {
-    const { permissions, super_admin } = req.body;
+    const { permissions, notes } = req.body;
     const userId = req.user.id;
 
     await pool.query(
-      `INSERT INTO admins (user_id, permissions, super_admin)
+      `INSERT INTO admins (admin_id, permissions, notes)
        VALUES ($1, $2, $3)`,
       [
         userId,
-        permissions || "full",
-        super_admin || false
+        permissions || {"manage_users": true, "delete_logs": false},
+        notes
       ]
     );
 
@@ -92,7 +92,7 @@ router.post("/admin", authMiddleware, async (req, res) => {
 router.get("/patient/me", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
-    const result = await pool.query("SELECT * FROM patients WHERE user_id = $1", [userId]);
+    const result = await pool.query("SELECT * FROM patients WHERE patient_id = $1", [userId]);
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Error fetching patient profile:", err.message);
@@ -107,7 +107,7 @@ router.get("/patient/me", authMiddleware, async (req, res) => {
 router.get("/clinic-staff/me", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
-    const result = await pool.query("SELECT * FROM clinic_staff WHERE user_id = $1", [userId]);
+    const result = await pool.query("SELECT * FROM clinic_staff WHERE staff_id = $1", [userId]);
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Error fetching clinic staff profile:", err.message);
@@ -121,7 +121,7 @@ router.get("/clinic-staff/me", authMiddleware, async (req, res) => {
  */
 router.get("/admin/me", authMiddleware, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM admins WHERE user_id=$1",[req.user.id]);
+    const result = await pool.query("SELECT * FROM admins WHERE admin_id=$1",[req.user.id]);
     res.json(result.rows[0] || null);
   } catch (err) {
     console.error("Error fetching admin profile:", err.message);

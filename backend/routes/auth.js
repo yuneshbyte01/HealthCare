@@ -11,14 +11,14 @@ const router = express.Router();
  */
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, phone, preferred_language } = req.body;
 
     // Hash password before storing
     const hashed = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
-      "INSERT INTO users (name, email, password, role) VALUES ($1,$2,$3,$4) RETURNING id, name, email, role",
-      [name, email, hashed, role || "patient"] // default role = patient
+      "INSERT INTO users (name, email, password, role, phone, preferred_language) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, name, email, role, phone, preferred_language",
+      [name, email, hashed, role || "patient", phone || null, preferred_language || "nepali"] // default role = patient, default language = nepali
     );
 
     res.json({ message: "User registered", user: result.rows[0] });
@@ -64,13 +64,13 @@ router.post("/login", async (req, res) => {
     // Check if role-specific profile exists
     let profileComplete = false;
     if (user.role === "patient") {
-      const check = await pool.query("SELECT 1 FROM patients WHERE user_id=$1", [user.id]);
+      const check = await pool.query("SELECT 1 FROM patients WHERE patient_id=$1", [user.id]);
       profileComplete = check.rows.length > 0;
     } else if (user.role === "clinic_staff") {
-      const check = await pool.query("SELECT 1 FROM clinic_staff WHERE user_id=$1", [user.id]);
+      const check = await pool.query("SELECT 1 FROM clinic_staff WHERE staff_id=$1", [user.id]);
       profileComplete = check.rows.length > 0;
     } else if (user.role === "admin") {
-      const check = await pool.query("SELECT 1 FROM admins WHERE user_id=$1", [user.id]);
+      const check = await pool.query("SELECT 1 FROM admins WHERE admin_id=$1", [user.id]);
       profileComplete = check.rows.length > 0;
     }
 
@@ -83,6 +83,8 @@ router.post("/login", async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
+        preferred_language: user.preferred_language,
       },
       profileComplete, // frontend will use this to decide if profile form should show
     });
