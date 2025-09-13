@@ -9,7 +9,8 @@ const connectMongo = require("./db/mongo");
 const authRoutes = require("./routes/auth");
 const appointmentRoutes = require("./routes/appointments");
 const syncRoutes = require("./routes/sync");
-const profileRoutes = require("./routes/profile"); // ✅ add this
+const profileRoutes = require("./routes/profile");
+const aiRoutes = require("./routes/ai");
 
 const app = express();
 
@@ -29,7 +30,8 @@ pool.query("SELECT NOW()")
 app.use("/auth", authRoutes);
 app.use("/appointments", appointmentRoutes);
 app.use("/sync", syncRoutes);
-app.use("/profile", profileRoutes); // mount profile routes
+app.use("/profile", profileRoutes);
+app.use("/ai", aiRoutes);
 
 // Health check route
 app.get("/", (req, res) => {
