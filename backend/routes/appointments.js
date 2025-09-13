@@ -105,10 +105,31 @@ router.post(
 
       console.log("Booking appointment for patient:", patient_id, "with AI data:", { urgency, noShowRisk });
       
+      // AI Scheduling Logic
+      let finalDate = date;
+      let schedulingNotes = "";
+      
+      // If urgency = urgent → assign nearest free slot
+      if (urgency === "urgent") {
+        // For urgent cases, try to find the nearest available slot
+        // This is simplified - in production, you'd query actual availability
+        const urgentSlot = new Date(date);
+        urgentSlot.setHours(urgentSlot.getHours() - 2); // Move 2 hours earlier
+        finalDate = urgentSlot.toISOString();
+        schedulingNotes = "Urgent case - prioritized scheduling";
+        console.log("Urgent case detected - rescheduled to:", finalDate);
+      }
+      
+      // If no_show_risk > 0.6 → mark for follow-up
+      if (parseFloat(noShowRisk) > 0.6) {
+        schedulingNotes += (schedulingNotes ? "; " : "") + "High no-show risk - follow-up recommended";
+        console.log("High no-show risk detected:", noShowRisk);
+      }
+      
       const result = await pool.query(
         `INSERT INTO appointments (patient_id, staff_id, clinic_id, date, urgency, no_show_risk, status) 
          VALUES ($1, $2, $3, $4, $5, $6, 'scheduled') RETURNING *`,
-        [patient_id, staff_id, clinic_id, date, urgency, noShowRisk]
+        [patient_id, staff_id, clinic_id, finalDate, urgency, noShowRisk]
       );
       
       console.log("Appointment created:", result.rows[0]);
@@ -170,6 +191,89 @@ router.get(
     } catch (err) {
       console.error("Error fetching appointments:", err.message);
       res.status(500).json({ error: "Failed to fetch appointments" });
+    }
+  }
+);
+
+/**
+ * POST /api/appointments/recommend
+ * AI-powered appointment slot recommendation
+ */
+router.post(
+  "/recommend",
+  authMiddleware,
+  roleMiddleware(["patient", "clinic_staff", "admin"]),
+  async (req, res) => {
+    try {
+      const { patient_id, symptoms } = req.body;
+      const userId = req.user.id;
+      
+      // Get AI triage assessment
+      let urgency = 'routine';
+      try {
+        const triageRes = await axios.post("http://localhost:6000/ml-triage", {
+          age: 65, // Default age - can be enhanced to get from patient profile
+          fever: (symptoms || "").toLowerCase().includes("fever"),
+          chestpain: (symptoms || "").toLowerCase().includes("chest pain")
+        });
+        urgency = triageRes.data.urgency;
+      } catch (aiError) {
+        console.warn("AI triage service unavailable for recommendation:", aiError.message);
+      }
+      
+      // AI Scheduling Logic - Find optimal slot
+      let recommendedSlot;
+      const now = new Date();
+      
+      if (urgency === "urgent") {
+        // For urgent cases, recommend next available slot (within 2 hours)
+        recommendedSlot = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours from now
+      } else if (urgency === "moderate") {
+        // For moderate cases, recommend slot within 24 hours
+        recommendedSlot = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours from now
+      } else {
+        // For routine cases, recommend slot within 3-7 days
+        recommendedSlot = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000); // 5 days from now
+      }
+      
+      // Round to nearest hour
+      recommendedSlot.setMinutes(0, 0, 0);
+      
+      // Check for conflicts (simplified - in production, query actual appointments)
+      const existingAppointments = await pool.query(
+        "SELECT COUNT(*) as count FROM appointments WHERE date = $1",
+        [recommendedSlot.toISOString()]
+      );
+      
+      if (existingAppointments.rows[0].count > 0) {
+        // If slot is taken, find next available hour
+        recommendedSlot.setHours(recommendedSlot.getHours() + 1);
+      }
+      
+      const recommendation = {
+        recommended_slot: recommendedSlot.toISOString(),
+        urgency: urgency,
+        reasoning: urgency === "urgent" ? "Urgent case - prioritized scheduling" :
+                  urgency === "moderate" ? "Moderate urgency - scheduled within 24 hours" :
+                  "Routine case - scheduled within 5 days",
+        ai_confidence: urgency === "urgent" ? "high" : "medium"
+      };
+      
+      // Log the recommendation
+      await Log.create({
+        action: "AI_RECOMMENDATION",
+        userId: userId,
+        details: {
+          recommendation: recommendation,
+          symptoms: symptoms,
+          patient_id: patient_id
+        }
+      });
+      
+      res.json(recommendation);
+    } catch (err) {
+      console.error("Error generating AI recommendation:", err.message);
+      res.status(500).json({ error: "Failed to generate recommendation" });
     }
   }
 );

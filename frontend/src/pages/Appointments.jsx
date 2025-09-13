@@ -19,7 +19,8 @@ export default function Appointments() {
   const [staffId, setStaffId] = useState("");
   const [clinicId, setClinicId] = useState("");
   const [urgency, setUrgency] = useState("routine");
-  const [loading, setLoading] = useState(false); // loading state for AI
+  const [recommendation, setRecommendation] = useState(null); // AI recommendation
+  const [recommendationLoading, setRecommendationLoading] = useState(false);
   const { t } = useTranslation();
 
   /**
@@ -105,31 +106,33 @@ export default function Appointments() {
   }, [fetchAppointments, t]);
 
   /**
-   * Ask backend AI service for suggested slot
+   * Get AI-powered appointment slot recommendation
    */
-  const suggestSlot = async () => {
-    if (!date) {
-      alert("Please pick a preferred date first.");
-      return;
-    }
-    setLoading(true);
+  const getAIRecommendation = async () => {
+    setRecommendationLoading(true);
     try {
-      const res = await API.post("/ai/suggest-appointment", {
-        preferred_date: date,
+      const res = await API.post("/appointments/recommend", {
+        patient_id: null, // Will be set from authenticated user
+        symptoms: "chest pain" // Default for testing - can be enhanced with form input
       });
 
-      if (res.data.suggested_date) {
-        const suggested = new Date(res.data.suggested_date).toLocaleString();
-        if (window.confirm(`AI suggests: ${suggested}. Do you want to use it?`)) {
-          setDate(res.data.suggested_date);
-        }
-      } else {
-        alert("No AI suggestions available.");
-      }
+      setRecommendation(res.data);
+      console.log("AI Recommendation:", res.data);
     } catch (err) {
-      alert("AI service unavailable.");
+      console.error("Error getting AI recommendation:", err);
+      alert("Failed to get AI recommendation. Please try again.");
     } finally {
-      setLoading(false);
+      setRecommendationLoading(false);
+    }
+  };
+
+  /**
+   * Use the AI recommended slot
+   */
+  const useRecommendedSlot = () => {
+    if (recommendation && recommendation.recommended_slot) {
+      setDate(recommendation.recommended_slot);
+      setRecommendation(null); // Clear recommendation after use
     }
   };
 
@@ -191,10 +194,70 @@ export default function Appointments() {
         </select>
       </div>
       
-      <button onClick={suggestSlot} disabled={loading}>
-        {loading ? "AI Suggesting..." : "AI Suggest"}
-      </button>
-      <button onClick={bookAppointment}>{t("appointments.bookAppointment")}</button>
+      <div style={{ margin: "10px 0" }}>
+        <button 
+          onClick={getAIRecommendation} 
+          disabled={recommendationLoading}
+          style={{ backgroundColor: "#4CAF50", color: "white" }}
+        >
+          {recommendationLoading ? "Getting AI Recommendation..." : "🤖 Get AI Recommendation"}
+        </button>
+        <button onClick={bookAppointment} style={{ marginLeft: "10px" }}>
+          {t("appointments.bookAppointment")}
+        </button>
+      </div>
+
+      {/* AI Recommendation Display */}
+      {recommendation && (
+        <div style={{ 
+          margin: "15px 0", 
+          padding: "15px", 
+          backgroundColor: "#e8f5e8", 
+          border: "1px solid #4CAF50", 
+          borderRadius: "5px" 
+        }}>
+          <h4>🤖 AI Recommendation</h4>
+          <p><strong>Recommended Slot:</strong> {new Date(recommendation.recommended_slot).toLocaleString()}</p>
+          <p><strong>Urgency:</strong> 
+            <span style={{ 
+              color: recommendation.urgency === "urgent" ? "red" : 
+                     recommendation.urgency === "moderate" ? "orange" : "green",
+              fontWeight: "bold"
+            }}>
+              {recommendation.urgency}
+            </span>
+          </p>
+          <p><strong>Reasoning:</strong> {recommendation.reasoning}</p>
+          <p><strong>AI Confidence:</strong> {recommendation.ai_confidence}</p>
+          <button 
+            onClick={useRecommendedSlot}
+            style={{ 
+              backgroundColor: "#4CAF50", 
+              color: "white", 
+              border: "none", 
+              padding: "8px 16px", 
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            ✅ Use This Slot
+          </button>
+          <button 
+            onClick={() => setRecommendation(null)}
+            style={{ 
+              backgroundColor: "#f44336", 
+              color: "white", 
+              border: "none", 
+              padding: "8px 16px", 
+              borderRadius: "4px",
+              cursor: "pointer",
+              marginLeft: "10px"
+            }}
+          >
+            ❌ Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Appointments list */}
       {appointments.length === 0 ? (
