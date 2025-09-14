@@ -6,45 +6,45 @@ const Log = require("../models/Log");
 const router = express.Router();
 
 /**
- * POST /api/appointments/sync
- * Sync multiple appointments in bulk (requires authentication).
+ * POST /appointments/sync
+ * Bulk sync appointments (patient’s own, from token).
  */
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { appointments } = req.body;
 
-    // Validate input
     if (!appointments || !Array.isArray(appointments)) {
       return res.status(400).json({ error: "Invalid request format" });
+    }
+
+    const patientId = parseInt(req.user.id); // patient from token
+    if (isNaN(patientId)) {
+      return res.status(401).json({ error: "Invalid patient ID from token" });
     }
 
     const syncedAppointments = [];
 
     for (let appt of appointments) {
-      // Insert or update appointment in Postgres
       const result = await pool.query(
-        `INSERT INTO appointments (patient_id, date, synced, last_updated)
-         VALUES ($1, $2, true, NOW())
+        `INSERT INTO appointments (patient_id, date, status, synced, last_updated)
+         VALUES ($1, $2, 'scheduled', true, NOW())
          RETURNING *`,
-        [appt.patient_id, appt.date]
+        [patientId, appt.date]
       );
 
       const appointmentData = result.rows[0];
       syncedAppointments.push(appointmentData);
 
-      // Log sync event in MongoDB
       await Log.create({
         action: "SYNCED",
-        userId: Number(appt.patient_id),
+        userId: patientId,
         details: { appointment: appointmentData }
       });
-
-      console.log("Sync logged for patient:", appt.patient_id);
     }
 
     res.json({ message: "Sync complete", syncedAppointments });
   } catch (err) {
-    console.error("Sync error:", err);
+    console.error("Sync error:", err.message);
     res.status(500).json({ error: "Sync failed" });
   }
 });

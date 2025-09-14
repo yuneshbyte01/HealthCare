@@ -9,7 +9,7 @@ app = Flask(__name__)
 # Initialize translator for multilingual support
 translator = Translator()
 
-# Load trained Decision Tree model for triage
+# Load trained a Decision Tree model for triage
 try:
     model = pickle.load(open("triage_model.pkl", "rb"))
     print("✅ Triage ML model loaded successfully")
@@ -17,7 +17,7 @@ except FileNotFoundError:
     print("⚠️  Triage model file not found, using fallback rules")
     model = None
 
-# Load trained Logistic Regression model for no-show prediction
+# Load trained a Logistic Regression model for no-show prediction
 try:
     noshow_model = pickle.load(open("noshow_model.pkl", "rb"))
     print("✅ No-show ML model loaded successfully")
@@ -118,11 +118,11 @@ def nlp_triage():
         print(f"🌐 Original: {symptoms} (Language: {detected.lang})")
         print(f"🔄 Translated: {translated}")
         
-        # Step 2: Extract features for ML model
+        # Step 2: Extract features for an ML model
         fever = 1 if "fever" in translated.lower() else 0
         chestpain = 1 if "chest pain" in translated.lower() or "chest hurts" in translated.lower() else 0
         
-        # Step 3: Use ML model for triage
+        # Step 3: Use an ML model for triage
         if model is not None:
             features = np.array([[age, fever, chestpain]])
             pred = model.predict(features)[0]
