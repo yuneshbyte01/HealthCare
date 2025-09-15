@@ -1,143 +1,224 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Appointments from "./pages/Appointments";
-import Dashboard from "./pages/Dashboard";
-import AnalyticsDashboard from "./pages/AnalyticsDashboard";
-import Clinic from "./pages/Clinic";
-import Admin from "./pages/Admin";
-import Forbidden from "./pages/Forbidden";
-import PrivateRoute from "./components/PrivateRoute";
+import { useAuth } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
-// import the profile completion page
-import CompletePatientProfile from "./pages/CompletePatientProfile";
-import CompleteClinicStaffProfile from "./pages/CompleteClinicStaffProfile";
-import CompleteAdminProfile from "./pages/CompleteAdminProfile";
+// Auth Pages
+import Login from "./pages/Auth/Login";
+import Register from "./pages/Auth/Register";
 
-// Profile completion pages for different roles
-import PatientProfile from "./pages/PatientProfile";
-import ClinicStaffProfile from "./pages/ClinicStaffProfile";
-import AdminProfile from "./pages/AdminProfile";
+// Profile Pages
+import PatientProfile from "./pages/Profile/PatientProfile";
+import StaffProfile from "./pages/Profile/StaffProfile";
+import AdminProfile from "./pages/Profile/AdminProfile";
+
+// Appointment Pages
+import BookAppointment from "./pages/Appointments/Book";
+import AppointmentList from "./pages/Appointments/List";
+import AppointmentRecommend from "./pages/Appointments/Recommend";
+import AppointmentSync from "./pages/Appointments/Sync";
+import TestAI from "./pages/Appointments/TestAI";
+
+// AI Pages (Admin only)
+import AIRetrain from "./pages/AI/Retrain";
+import AIStatus from "./pages/AI/Status";
+
+// Analytics Pages
+import AnalyticsTrends from "./pages/Analytics/Trends";
+import AnalyticsAlerts from "./pages/Analytics/Alerts";
+import AnalyticsGeographic from "./pages/Analytics/Geographic";
+import AnalyticsPerformance from "./pages/Analytics/Performance";
+
+// Dashboard Pages
+import PatientDashboard from "./pages/Dashboards/Patient";
+import StaffDashboard from "./pages/Dashboards/Staff";
+import AdminDashboard from "./pages/Dashboards/Admin";
+
+// Other Pages
+import Home from "./pages/Home";
+import Forbidden from "./pages/Forbidden";
 
 /**
- * App Component
- * Root component that handles routing and navigation.
+ * Main App Component with role-based routing
  */
 function App() {
+  const { role } = useAuth();
+
+  // Role-based dashboard component
+  const DashboardComponent = () => {
+    switch (role) {
+      case 'patient':
+        return <PatientDashboard />;
+      case 'clinic_staff':
+        return <StaffDashboard />;
+      case 'admin':
+        return <AdminDashboard />;
+      default:
+        return <PatientDashboard />;
+    }
+  };
+
   return (
     <Router>
-      {/* Navigation bar */}
-      <Navbar />
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        
+        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forbidden" element={<Forbidden />} />
 
-      {/* Define application routes */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+            {/* Dashboard Routes - Role-based */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute roles={["patient", "clinic_staff", "admin"]}>
+                  <DashboardComponent />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Profile completion for patients */}
-        <Route
-          path="/complete-patient-profile"
-          element={
-            <PrivateRoute roles={["patient"]}>
-              <CompletePatientProfile />
-            </PrivateRoute>
-          }
-        />
+            {/* Profile Routes */}
+            <Route
+              path="/profile/patient"
+              element={
+                <ProtectedRoute roles={["patient"]}>
+                  <PatientProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/clinic-staff"
+              element={
+                <ProtectedRoute roles={["clinic_staff"]}>
+                  <StaffProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/admin"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <AdminProfile />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Profile completion for clinic staff */}
-        <Route
-          path="/complete-clinic-staff-profile"
-          element={
-            <PrivateRoute roles={["clinic_staff"]}>
-              <CompleteClinicStaffProfile />
-            </PrivateRoute>
-          }
-        />
+            {/* Appointment Routes */}
+            <Route
+              path="/appointments"
+              element={
+                <ProtectedRoute roles={["patient", "clinic_staff", "admin"]}>
+                  <AppointmentList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appointments/book"
+              element={
+                <ProtectedRoute roles={["patient"]}>
+                  <BookAppointment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appointments/recommend"
+              element={
+                <ProtectedRoute roles={["patient"]}>
+                  <AppointmentRecommend />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appointments/sync"
+              element={
+                <ProtectedRoute roles={["patient"]}>
+                  <AppointmentSync />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appointments/test-ai"
+              element={
+                <ProtectedRoute roles={["patient", "clinic_staff", "admin"]}>
+                  <TestAI />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Profile completion for admin */}
-        <Route
-          path="/complete-admin-profile"
-          element={
-            <PrivateRoute roles={["admin"]}>
-              <CompleteAdminProfile />
-            </PrivateRoute>
-          }
-        />
+            {/* AI Management Routes (Admin only) */}
+            <Route
+              path="/ai"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <AIStatus />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ai/retrain"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <AIRetrain />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ai/status"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <AIStatus />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Protected routes with roles */}
-        <Route
-          path="/appointments"
-          element={
-            <PrivateRoute roles={["patient"]}>
-              <Appointments />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute roles={["patient", "clinic_staff", "admin"]}>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/analytics"
-          element={
-            <PrivateRoute roles={["clinic_staff", "admin"]}>
-              <AnalyticsDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/clinic"
-          element={
-            <PrivateRoute roles={["clinic_staff", "admin"]}>
-              <Clinic />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <PrivateRoute roles={["admin"]}>
-              <Admin />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Profile pages for different roles */}
-        <Route
-          path="/patient-profile"
-          element={
-            <PrivateRoute roles={["patient"]}>
-              <PatientProfile />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/clinic-staff-profile"
-          element={
-            <PrivateRoute roles={["clinic_staff"]}>
-              <ClinicStaffProfile />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin-profile"
-          element={
-            <PrivateRoute roles={["admin"]}>
-              <AdminProfile />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Forbidden page for unauthorized role attempts */}
-        <Route path="/forbidden" element={<Forbidden />} />
-      </Routes>
+            {/* Analytics Routes */}
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute roles={["clinic_staff", "admin"]}>
+                  <AnalyticsTrends />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics/trends"
+              element={
+                <ProtectedRoute roles={["clinic_staff", "admin"]}>
+                  <AnalyticsTrends />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics/alerts"
+              element={
+                <ProtectedRoute roles={["clinic_staff", "admin"]}>
+                  <AnalyticsAlerts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics/geographic"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <AnalyticsGeographic />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics/performance"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <AnalyticsPerformance />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </main>
+      </div>
     </Router>
   );
 }

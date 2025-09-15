@@ -1,49 +1,152 @@
 {
   "common": {
-    "welcome": "Welcome to Healthcare System",
+    "welcome": "Welcome to Healthcare AI System",
     "home": "Home",
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
+    "dashboard": "Dashboard",
     "name": "Name",
     "email": "Email",
     "password": "Password",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "confirm": "Confirm",
     "greeting": "Welcome, {{name}}"
   },
 
   "homePage": {
-    "homeMessage": "Please login or register to continue."
+    "homeMessage": "Please continue by logging in or registering."
   },
 
   "auth": {
+    "loginTitle": "Sign In",
+    "registerTitle": "Register",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "confirmPassword": "Confirm Password",
+    "loginButton": "Sign In",
+    "registerButton": "Register",
     "registerSuccess": "Registration successful! Please log in.",
     "registerFailed": "Registration failed. Please try again.",
     "loginFailed": "Login failed. Please check your credentials.",
     "loginSuccess": "Login successful! Welcome back."
   },
 
+  "dashboard": {
+    "title": "Dashboard",
+    "patient": {
+      "title": "Patient Dashboard",
+      "nextAppointment": "Next Appointment",
+      "quickBook": "Quick Book Appointment",
+      "recentActivity": "Recent Activity"
+    },
+    "staff": {
+      "title": "Staff Dashboard",
+      "urgentCases": "Urgent Cases",
+      "alertsPreview": "Alerts Preview",
+      "todayAppointments": "Today's Appointments"
+    },
+    "admin": {
+      "title": "Admin Dashboard",
+      "systemStats": "System Statistics",
+      "aiRetrainStatus": "AI Retrain Status",
+      "performanceSnapshot": "Performance Snapshot"
+    }
+  },
+
   "appointments": {
-    "appointments": "Appointments",
+    "title": "Appointments",
     "myAppointments": "My Appointments",
-    "book": "Book Appointment",
+    "allAppointments": "All Appointments",
+    "book": "Book",
     "bookAppointment": "Book Appointment",
     "cancel": "Cancel",
-    "cancelFailed": "Failed to cancel appointment",
-    "cancelFailedOffline": "Could not cancel appointment (offline mode).",
-    "appointmentSavedOffline": "Appointment saved offline, will sync later."
+    "reschedule": "Reschedule",
+    "sync": "Sync",
+    "recommend": "AI Recommendation",
+    "testAI": "Test AI",
+    "date": "Date",
+    "time": "Time",
+    "doctor": "Doctor",
+    "status": "Status",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "completed": "Completed"
+  },
+
+  "profile": {
+    "title": "Profile",
+    "myProfile": "My Profile",
+    "createProfile": "Create Profile",
+    "completeProfile": "Complete Profile",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "dob": "Date of Birth",
+    "phone": "Phone Number",
+    "gender": "Gender",
+    "address": "Address",
+    "medicalHistory": "Medical History",
+    "preferredLanguage": "Preferred Language",
+    "position": "Position",
+    "department": "Department",
+    "workSchedule": "Work Schedule",
+    "permissions": "Permissions",
+    "saveProfile": "Save Profile",
+    "updateProfile": "Update Profile"
+  },
+
+  "ai": {
+    "title": "AI Management",
+    "management": "AI Management",
+    "retrain": "Retrain Models",
+    "retrainModels": "Retrain Models",
+    "status": "AI Status",
+    "aiStatus": "AI Status",
+    "triageModel": "Triage Model",
+    "noShowModel": "No-Show Model",
+    "modelPerformance": "Model Performance",
+    "accuracy": "Accuracy",
+    "lastTrained": "Last Trained"
+  },
+
+  "analytics": {
+    "title": "Analytics",
+    "trends": "Trends",
+    "alerts": "Alerts",
+    "geographic": "Geographic",
+    "performance": "Performance",
+    "urgentCases": "Urgent Cases",
+    "noShowRate": "No-Show Rate",
+    "capacityUtilization": "Capacity Utilization",
+    "patientSatisfaction": "Patient Satisfaction",
+    "systemHealth": "System Health"
   },
 
   "clinic": {
-    "clinicDashboard": "Clinic Dashboard",
+    "title": "Clinic",
+    "dashboard": "Clinic Dashboard",
     "allAppointments": "All Appointments",
     "patient": "Patient",
-    "dailyLoad": "Daily Appointment Load"
+    "dailyLoad": "Daily Appointment Load",
+    "staff": "Staff",
+    "resources": "Resources"
   },
 
   "admin": {
+    "title": "Admin",
     "dashboard": "Admin Dashboard",
     "systemLogs": "System Logs",
-    "manageUsers": "Manage Users"
+    "manageUsers": "Manage Users",
+    "systemSettings": "System Settings",
+    "userManagement": "User Management"
   },
 
   "roles": {
@@ -52,38 +155,23 @@
     "admin": "Administrator"
   },
 
-  "profile": {
-    "completeClinicStaffProfile": "Complete Clinic Staff Profile",
-    "completePatientProfile": "Complete Patient Profile",
-    "dob": "Date of Birth",
-    "phone": "Phone Number",
-    "gender": "Gender",
-    "address": "Address",
-    "medicalHistory": "Medical History",
-    "preferredLanguage": "Preferred Language",
-    "saveProfile": "Save Profile",
-    "success": "Profile completed successfully!",
-    "failed": "Failed to complete profile",
-    "position": "Position",
-    "department": "Department",
-    "workSchedule": "Work Schedule",
-    "permissions": "Permissions",
-    "completeAdminProfile": "Complete Admin Profile",
-    "myProfile": "My Profile"
-  },
-
   "offline": {
-    "offlineFetchError": "Offline mode - could not fetch appointments",
-    "offlineSynced": "Offline appointments synced!"
+    "offlineFetchError": "Offline mode - could not fetch data",
+    "offlineSynced": "Offline data synced!",
+    "connectionLost": "Connection lost. Working offline.",
+    "connectionRestored": "Connection restored."
   },
 
   "errors": {
     "networkError": "Network error. Please check your connection.",
-    "unexpectedError": "An unexpected error occurred. Please try again later."
+    "unexpectedError": "An unexpected error occurred. Please try again later.",
+    "validationError": "Please check your input and try again.",
+    "permissionDenied": "You don't have permission to perform this action."
   },
 
   "forbidden": {
-    "accessDenied": "403 - Access Denied",
-    "noPermission": "You do not have permission to view this page."
+    "title": "403 - Access Denied",
+    "noPermission": "You do not have permission to view this page.",
+    "goHome": "Go to Home"
   }
 }

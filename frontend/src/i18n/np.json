@@ -1,49 +1,152 @@
 {
   "common": {
-    "welcome": "स्वास्थ्य प्रणालीमा स्वागत छ",
+    "welcome": "स्वास्थ्य एआई प्रणालीमा स्वागत छ",
     "home": "गृहपृष्ठ",
     "login": "लगइन",
-    "register": "दर्ता",
+    "register": "दर्ता गर्नुहोस्",
     "logout": "लगआउट",
+    "dashboard": "ड्यासबोर्ड",
     "name": "नाम",
     "email": "इमेल",
     "password": "पासवर्ड",
+    "save": "सुरक्षित गर्नुहोस्",
+    "cancel": "रद्द गर्नुहोस्",
+    "edit": "सम्पादन गर्नुहोस्",
+    "delete": "मेटाउनुहोस्",
+    "view": "हेर्नुहोस्",
+    "loading": "लोड भइरहेको...",
+    "success": "सफलता",
+    "error": "त्रुटि",
+    "confirm": "पुष्टि गर्नुहोस्",
     "greeting": "स्वागत छ, {{name}}"
   },
 
   "homePage": {
-    "homeMessage": "कृपया जारी राख्न लगइन वा दर्ता गर्नुहोस्।"
+    "homeMessage": "कृपया लगइन वा दर्ता गरेर जारी राख्नुहोस्।"
   },
 
   "auth": {
+    "loginTitle": "साइन इन गर्नुहोस्",
+    "registerTitle": "दर्ता गर्नुहोस्",
+    "emailLabel": "इमेल",
+    "passwordLabel": "पासवर्ड",
+    "confirmPassword": "पासवर्ड पुष्टि गर्नुहोस्",
+    "loginButton": "लगइन गर्नुहोस्",
+    "registerButton": "दर्ता गर्नुहोस्",
     "registerSuccess": "दर्ता सफल भयो! कृपया लगइन गर्नुहोस्।",
     "registerFailed": "दर्ता असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।",
     "loginFailed": "लगइन असफल भयो। कृपया प्रमाणहरू जाँच गर्नुहोस्।",
     "loginSuccess": "लगइन सफल भयो! फेरी स्वागत छ।"
   },
 
+  "dashboard": {
+    "title": "ड्यासबोर्ड",
+    "patient": {
+      "title": "रोगी ड्यासबोर्ड",
+      "nextAppointment": "अर्को भेटघाट",
+      "quickBook": "छिटो भेटघाट बुक गर्नुहोस्",
+      "recentActivity": "हालको गतिविधि"
+    },
+    "staff": {
+      "title": "कर्मचारी ड्यासबोर्ड",
+      "urgentCases": "तत्कालका केसहरू",
+      "alertsPreview": "सचेतना पूर्वावलोकन",
+      "todayAppointments": "आजका भेटघाटहरू"
+    },
+    "admin": {
+      "title": "प्रशासक ड्यासबोर्ड",
+      "systemStats": "प्रणाली तथ्याङ्क",
+      "aiRetrainStatus": "एआई पुन: तालिम स्थिति",
+      "performanceSnapshot": "प्रदर्शन झलक"
+    }
+  },
+
   "appointments": {
-    "appointments": "भेटघाट",
+    "title": "भेटघाटहरू",
     "myAppointments": "मेरो भेटघाटहरू",
-    "book": "भेटघाट बुक गर्नुहोस्",
+    "allAppointments": "सबै भेटघाटहरू",
+    "book": "बुक गर्नुहोस्",
     "bookAppointment": "भेटघाट बुक गर्नुहोस्",
     "cancel": "रद्द गर्नुहोस्",
-    "cancelFailed": "भेटघाट रद्द गर्न असफल भयो",
-    "cancelFailedOffline": "अफलाइन मोडमा भेटघाट रद्द गर्न सकिएन।",
-    "appointmentSavedOffline": "भेटघाट अफलाइनमा सुरक्षित भयो, पछि समक्रमण हुनेछ।"
+    "reschedule": "मिति परिवर्तन गर्नुहोस्",
+    "sync": "समक्रमण",
+    "recommend": "एआई सिफारिस",
+    "testAI": "एआई परीक्षण",
+    "date": "मिति",
+    "time": "समय",
+    "doctor": "चिकित्सक",
+    "status": "स्थिति",
+    "pending": "बाँकी",
+    "confirmed": "पुष्टि भएको",
+    "cancelled": "रद्द भएको",
+    "completed": "पूरा भएको"
+  },
+
+  "profile": {
+    "title": "प्रोफाइल",
+    "myProfile": "मेरो प्रोफाइल",
+    "createProfile": "प्रोफाइल बनाउनुहोस्",
+    "completeProfile": "प्रोफाइल पूरा गर्नुहोस्",
+    "personalInfo": "व्यक्तिगत जानकारी",
+    "contactInfo": "सम्पर्क जानकारी",
+    "dob": "जन्म मिति",
+    "phone": "फोन नम्बर",
+    "gender": "लिङ्ग",
+    "address": "ठेगाना",
+    "medicalHistory": "स्वास्थ्य इतिहास",
+    "preferredLanguage": "प्राथमिक भाषा",
+    "position": "पद",
+    "department": "विभाग",
+    "workSchedule": "कार्य तालिका",
+    "permissions": "अनुमतिहरू",
+    "saveProfile": "प्रोफाइल सुरक्षित गर्नुहोस्",
+    "updateProfile": "प्रोफाइल अपडेट गर्नुहोस्"
+  },
+
+  "ai": {
+    "title": "एआई व्यवस्थापन",
+    "management": "एआई व्यवस्थापन",
+    "retrain": "मोडेल पुन: तालिम",
+    "retrainModels": "मोडेल पुन: तालिम",
+    "status": "एआई स्थिति",
+    "aiStatus": "एआई स्थिति",
+    "triageModel": "ट्रायज मोडेल",
+    "noShowModel": "नो-शो मोडेल",
+    "modelPerformance": "मोडेल प्रदर्शन",
+    "accuracy": "शुद्धता",
+    "lastTrained": "अन्तिम तालिम"
+  },
+
+  "analytics": {
+    "title": "विश्लेषण",
+    "trends": "प्रवृत्ति",
+    "alerts": "सचेतनाहरू",
+    "geographic": "भौगोलिक",
+    "performance": "प्रदर्शन",
+    "urgentCases": "तत्कालका केसहरू",
+    "noShowRate": "नो-शो दर",
+    "capacityUtilization": "क्षमता उपयोग",
+    "patientSatisfaction": "रोगी सन्तुष्टि",
+    "systemHealth": "प्रणाली स्वास्थ्य"
   },
 
   "clinic": {
-    "clinicDashboard": "क्लिनिक ड्यासबोर्ड",
+    "title": "क्लिनिक",
+    "dashboard": "क्लिनिक ड्यासबोर्ड",
     "allAppointments": "सबै भेटघाटहरू",
     "patient": "रोगी",
-    "dailyLoad": "दैनिक भेटघाट लोड"
+    "dailyLoad": "दैनिक भेटघाट लोड",
+    "staff": "कर्मचारी",
+    "resources": "स्रोतहरू"
   },
 
   "admin": {
+    "title": "प्रशासक",
     "dashboard": "प्रशासक ड्यासबोर्ड",
     "systemLogs": "प्रणाली लगहरू",
-    "manageUsers": "प्रयोगकर्ता व्यवस्थापन"
+    "manageUsers": "प्रयोगकर्ता व्यवस्थापना",
+    "systemSettings": "प्रणाली सेटिङहरू",
+    "userManagement": "प्रयोगकर्ता व्यवस्थापना"
   },
 
   "roles": {
@@ -52,38 +155,23 @@
     "admin": "प्रशासक"
   },
 
-  "profile": {
-    "completeClinicStaffProfile": "क्लिनिक कर्मचारी प्रोफाइल पूरा गर्नुहोस्",
-    "completePatientProfile": "रोगी प्रोफाइल पूरा गर्नुहोस्",
-    "completeAdminProfile": "प्रशासक प्रोफाइल पूरा गर्नुहोस्",
-    "dob": "जन्म मिति",
-    "phone": "फोन नम्बर",
-    "gender": "लिङ्ग",
-    "address": "ठेगाना",
-    "medicalHistory": "स्वास्थ्य इतिहास",
-    "preferredLanguage": "प्राथमिक भाषा",
-    "saveProfile": "प्रोफाइल सुरक्षित गर्नुहोस्",
-    "success": "प्रोफाइल सफलतापूर्वक पूरा भयो!",
-    "failed": "प्रोफाइल पूरा गर्न असफल",
-    "position": "पद",
-    "department": "विभाग",
-    "workSchedule": "कार्य तालिका",
-    "permissions": "अनुमतिहरू",
-    "myProfile": "मेरो प्रोफाइल"
-  },
-
   "offline": {
-    "offlineFetchError": "अफलाइन मोड - भेटघाटहरू ल्याउन सकिएन",
-    "offlineSynced": "अफलाइन भेटघाटहरू समक्रमित गरियो!"
+    "offlineFetchError": "अफलाइन मोड - डेटा ल्याउन सकिएन",
+    "offlineSynced": "अफलाइन डेटा समक्रमित भयो!",
+    "connectionLost": "जडान हराएको। अफलाइन काम गर्दै।",
+    "connectionRestored": "जडान पुनर्स्थापित भयो।"
   },
 
   "errors": {
     "networkError": "नेटवर्क त्रुटि। कृपया जडान जाँच गर्नुहोस्।",
-    "unexpectedError": "अप्रत्याशित त्रुटि भयो। कृपया पछि प्रयास गर्नुहोस्।"
+    "unexpectedError": "अप्रत्याशित त्रुटि भयो। कृपया पछि प्रयास गर्नुहोस्।",
+    "validationError": "कृपया आफ्नो इनपुट जाँच गर्नुहोस् र पुन: प्रयास गर्नुहोस्।",
+    "permissionDenied": "तपाईंलाई यो कार्य गर्न अनुमति छैन।"
   },
 
   "forbidden": {
-    "accessDenied": "४०३ - पहुँच अस्वीकृत",
-    "noPermission": "तपाईंलाई यो पृष्ठ हेर्न अनुमति छैन।"
+    "title": "४०३ - पहुँच अस्वीकृत",
+    "noPermission": "तपाईंलाई यो पृष्ठ हेर्न अनुमति छैन।",
+    "goHome": "गृहपृष्ठमा जानुहोस्"
   }
 }

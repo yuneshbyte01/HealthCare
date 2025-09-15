@@ -1,13 +1,26 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for healthcare app */
+.healthcare-gradient {
+  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.card-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Animation for alerts */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(220, 38, 38, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.8); }
+}
+
+.alert-pulse {
+  animation: pulse-glow 2s infinite;
 }
