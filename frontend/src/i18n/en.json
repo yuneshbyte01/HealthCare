@@ -1,6 +1,6 @@
 {
   "common": {
-    "welcome": "Welcome to Healthcare AI System",
+    "welcome": "Welcome",
     "home": "Home",
     "login": "Login",
     "register": "Register",
@@ -18,25 +18,117 @@
     "success": "Success",
     "error": "Error",
     "confirm": "Confirm",
-    "greeting": "Welcome, {{name}}"
+    "greeting": "Welcome, {{name}}",
+    "getStarted": "Get Started",
+    "goToDashboard": "Go to Dashboard",
+    "failedToLoad": "Failed to load",
+    "tryAgain": "Try Again",
+    "pleaseWait": "Please wait",
+    "noData": "No data available",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "reset": "Reset",
+    "clear": "Clear",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "warning": "Warning",
+    "info": "Info",
+    "alert": "Alert",
+    "notification": "Notification",
+    "message": "Message",
+    "phone": "Phone",
+    "address": "Address",
+    "date": "Date",
+    "time": "Time",
+    "location": "Location",
+    "description": "Description",
+    "notes": "Notes",
+    "comments": "Comments",
+    "feedback": "Feedback",
+    "support": "Support",
+    "help": "Help",
+    "about": "About",
+    "contact": "Contact",
+    "settings": "Settings",
+    "language": "Language"
   },
 
-  "homePage": {
-    "homeMessage": "Please continue by logging in or registering."
+  "home": {
+    "title": "Smart Healthcare for Rural Nepal",
+    "subtitle": "AI-powered appointment system designed for rural healthcare access",
+    "features": {
+      "title": "Key Features",
+      "subtitle": "Everything you need for modern healthcare management",
+      "ai": {
+        "title": "AI-Powered Triage",
+        "description": "Smart appointment scheduling with AI-driven urgency assessment"
+      },
+      "mobile": {
+        "title": "Mobile-First Design",
+        "description": "Optimized for mobile devices with offline capabilities"
+      },
+      "multilingual": {
+        "title": "Multilingual Support",
+        "description": "Available in English and Nepali for better accessibility"
+      },
+      "analytics": {
+        "title": "Real-time Analytics",
+        "description": "Comprehensive insights and reporting for healthcare providers"
+      },
+      "security": {
+        "title": "Secure & Private",
+        "description": "HIPAA-compliant with end-to-end encryption"
+      },
+      "fast": {
+        "title": "Fast & Reliable",
+        "description": "Lightning-fast performance with 99.9% uptime"
+      }
+    },
+    "stats": {
+      "title": "Trusted by Healthcare Providers",
+      "appointments": "Appointments Scheduled",
+      "users": "Active Users",
+      "uptime": "System Uptime"
+    },
+    "cta": {
+      "title": "Ready to Transform Healthcare?",
+      "subtitle": "Join thousands of healthcare providers using our AI-powered platform",
+      "getStarted": "Get Started Today"
+    }
   },
 
   "auth": {
     "loginTitle": "Sign In",
-    "registerTitle": "Register",
-    "emailLabel": "Email",
+    "loginSubtitle": "Welcome back! Please sign in to your account",
+    "registerTitle": "Create Account",
+    "registerSubtitle": "Join our healthcare platform today",
+    "email": "Email Address",
+    "emailLabel": "Email Address",
+    "password": "Password",
     "passwordLabel": "Password",
     "confirmPassword": "Confirm Password",
     "loginButton": "Sign In",
-    "registerButton": "Register",
+    "registerButton": "Create Account",
     "registerSuccess": "Registration successful! Please log in.",
     "registerFailed": "Registration failed. Please try again.",
     "loginFailed": "Login failed. Please check your credentials.",
-    "loginSuccess": "Login successful! Welcome back."
+    "loginSuccess": "Login successful! Welcome back.",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember Me",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signUp": "Sign Up",
+    "signIn": "Sign In"
   },
 
   "dashboard": {
@@ -45,24 +137,40 @@
       "title": "Patient Dashboard",
       "nextAppointment": "Next Appointment",
       "quickBook": "Quick Book Appointment",
-      "recentActivity": "Recent Activity"
+      "recentActivity": "Recent Activity",
+      "healthStats": "Health Statistics",
+      "totalAppointments": "Total Appointments",
+      "upcomingAppointments": "Upcoming Appointments",
+      "completedAppointments": "Completed Appointments",
+      "noUpcomingAppointments": "No upcoming appointments",
+      "bookNewAppointment": "Book New Appointment"
     },
     "staff": {
       "title": "Staff Dashboard",
       "urgentCases": "Urgent Cases",
       "alertsPreview": "Alerts Preview",
-      "todayAppointments": "Today's Appointments"
+      "todayAppointments": "Today's Appointments",
+      "systemStats": "System Statistics",
+      "totalPatients": "Total Patients",
+      "appointmentsToday": "Appointments Today",
+      "urgentCasesCount": "Urgent Cases",
+      "systemHealth": "System Health"
     },
     "admin": {
       "title": "Admin Dashboard",
       "systemStats": "System Statistics",
       "aiRetrainStatus": "AI Retrain Status",
-      "performanceSnapshot": "Performance Snapshot"
+      "performanceSnapshot": "Performance Snapshot",
+      "totalUsers": "Total Users",
+      "totalAppointments": "Total Appointments",
+      "systemUptime": "System Uptime",
+      "aiModelStatus": "AI Model Status"
     }
   },
 
   "appointments": {
     "title": "Appointments",
+    "appointments": "Appointments",
     "myAppointments": "My Appointments",
     "allAppointments": "All Appointments",
     "book": "Book",
@@ -79,7 +187,63 @@
     "pending": "Pending",
     "confirmed": "Confirmed",
     "cancelled": "Cancelled",
-    "completed": "Completed"
+    "completed": "Completed",
+    "scheduled": "Scheduled",
+    "inProgress": "In Progress",
+    "noShow": "No Show",
+    "urgent": "Urgent",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "symptoms": "Symptoms",
+    "urgencyLevel": "Urgency Level",
+    "riskScore": "Risk Score",
+    "recommendation": "Recommendation",
+    "clinic": "Clinic",
+    "staff": "Staff",
+    "patient": "Patient",
+    "appointmentDetails": "Appointment Details",
+    "appointmentHistory": "Appointment History",
+    "upcomingAppointments": "Upcoming Appointments",
+    "pastAppointments": "Past Appointments",
+    "noAppointments": "No appointments found",
+    "noUpcomingAppointments": "No upcoming appointments",
+    "bookNewAppointment": "Book New Appointment",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "selectClinic": "Select Clinic",
+    "selectStaff": "Select Staff",
+    "enterSymptoms": "Enter Symptoms",
+    "appointmentBooked": "Appointment booked successfully",
+    "appointmentCancelled": "Appointment cancelled successfully",
+    "appointmentRescheduled": "Appointment rescheduled successfully",
+    "appointmentUpdated": "Appointment updated successfully",
+    "appointmentNotFound": "Appointment not found",
+    "invalidDate": "Invalid date selected",
+    "invalidTime": "Invalid time selected",
+    "clinicNotAvailable": "Clinic not available",
+    "staffNotAvailable": "Staff not available",
+    "timeSlotNotAvailable": "Time slot not available",
+    "symptomsRequired": "Symptoms are required",
+    "dateRequired": "Date is required",
+    "timeRequired": "Time is required",
+    "clinicRequired": "Clinic is required",
+    "staffRequired": "Staff is required",
+    "appointment": "Appointment",
+    "basicInfo": "Basic Information",
+    "medicalInfo": "Medical Information",
+    "patientInfo": "Patient Information",
+    "insights": "Insights",
+    "notAssigned": "Not assigned",
+    "notProvided": "Not provided",
+    "markCompleted": "Mark as Completed",
+    "markCancelled": "Mark as Cancelled",
+    "confirmStatusChange": "Are you sure you want to change status to {{status}}?",
+    "confirmCancel": "Are you sure you want to cancel this appointment?",
+    "enterNewDate": "Enter new date and time (YYYY-MM-DDTHH:MM):",
+    "noAppointmentsYet": "You have no appointments yet.",
+    "noFilteredAppointments": "No {{status}} appointments found.",
+    "actions": "Actions"
   },
 
   "profile": {
@@ -100,7 +264,26 @@
     "workSchedule": "Work Schedule",
     "permissions": "Permissions",
     "saveProfile": "Save Profile",
-    "updateProfile": "Update Profile"
+    "updateProfile": "Update Profile",
+    "profileCreated": "Profile created successfully",
+    "profileUpdated": "Profile updated successfully",
+    "profileNotFound": "Profile not found",
+    "profileIncomplete": "Profile incomplete",
+    "completeProfileFirst": "Please complete your profile first",
+    "bloodGroup": "Blood Group",
+    "allergies": "Allergies",
+    "chronicConditions": "Chronic Conditions",
+    "emergencyContact": "Emergency Contact",
+    "accessLevel": "Access Level",
+    "lastLogin": "Last Login",
+    "profilePicture": "Profile Picture",
+    "uploadPicture": "Upload Picture",
+    "removePicture": "Remove Picture",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "english": "English",
+    "nepali": "Nepali"
   },
 
   "ai": {
@@ -114,7 +297,32 @@
     "noShowModel": "No-Show Model",
     "modelPerformance": "Model Performance",
     "accuracy": "Accuracy",
-    "lastTrained": "Last Trained"
+    "lastTrained": "Last Trained",
+    "modelStatus": "Model Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "training": "Training",
+    "ready": "Ready",
+    "error": "Error",
+    "retrainSuccess": "Models retrained successfully",
+    "retrainFailed": "Model retraining failed",
+    "retrainInProgress": "Model retraining in progress",
+    "testModels": "Test AI Models",
+    "getAIRecommendations": "Get AI Recommendations",
+    "modelAccuracy": "Model Accuracy",
+    "predictionAccuracy": "Prediction Accuracy",
+    "triageAccuracy": "Triage Accuracy",
+    "noShowAccuracy": "No-Show Accuracy",
+    "lastRetrain": "Last Retrain",
+    "nextRetrain": "Next Retrain",
+    "retrainNow": "Retrain Now",
+    "retrainScheduled": "Retrain Scheduled",
+    "retrainHistory": "Retrain History",
+    "modelMetrics": "Model Metrics",
+    "performanceMetrics": "Performance Metrics",
+    "trainingData": "Training Data",
+    "validationData": "Validation Data",
+    "testData": "Test Data"
   },
 
   "analytics": {
@@ -127,7 +335,37 @@
     "noShowRate": "No-Show Rate",
     "capacityUtilization": "Capacity Utilization",
     "patientSatisfaction": "Patient Satisfaction",
-    "systemHealth": "System Health"
+    "systemHealth": "System Health",
+    "appointmentTrends": "Appointment Trends",
+    "urgencyDistribution": "Urgency Distribution",
+    "dailyTrends": "Daily Trends",
+    "noshowRiskDistribution": "No-Show Risk Distribution",
+    "totalAppointments": "Total Appointments",
+    "urgentAppointments": "Urgent Appointments",
+    "noShowAppointments": "No-Show Appointments",
+    "completedAppointments": "Completed Appointments",
+    "cancelledAppointments": "Cancelled Appointments",
+    "averageWaitTime": "Average Wait Time",
+    "patientFlow": "Patient Flow",
+    "clinicPerformance": "Clinic Performance",
+    "staffPerformance": "Staff Performance",
+    "resourceUtilization": "Resource Utilization",
+    "peakHours": "Peak Hours",
+    "offPeakHours": "Off-Peak Hours",
+    "busyDays": "Busy Days",
+    "quietDays": "Quiet Days",
+    "monthlyStats": "Monthly Statistics",
+    "weeklyStats": "Weekly Statistics",
+    "dailyStats": "Daily Statistics",
+    "hourlyStats": "Hourly Statistics",
+    "comparison": "Comparison",
+    "previousPeriod": "Previous Period",
+    "currentPeriod": "Current Period",
+    "growth": "Growth",
+    "decline": "Decline",
+    "stable": "Stable",
+    "improvement": "Improvement",
+    "deterioration": "Deterioration"
   },
 
   "clinic": {
@@ -137,7 +375,18 @@
     "patient": "Patient",
     "dailyLoad": "Daily Appointment Load",
     "staff": "Staff",
-    "resources": "Resources"
+    "resources": "Resources",
+    "clinicInfo": "Clinic Information",
+    "clinicName": "Clinic Name",
+    "clinicAddress": "Clinic Address",
+    "clinicPhone": "Clinic Phone",
+    "clinicEmail": "Clinic Email",
+    "clinicHours": "Clinic Hours",
+    "clinicServices": "Clinic Services",
+    "clinicCapacity": "Clinic Capacity",
+    "clinicStaff": "Clinic Staff",
+    "clinicEquipment": "Clinic Equipment",
+    "clinicFacilities": "Clinic Facilities"
   },
 
   "admin": {
@@ -146,7 +395,20 @@
     "systemLogs": "System Logs",
     "manageUsers": "Manage Users",
     "systemSettings": "System Settings",
-    "userManagement": "User Management"
+    "userManagement": "User Management",
+    "systemAdministration": "System Administration",
+    "userRoles": "User Roles",
+    "permissions": "Permissions",
+    "systemMaintenance": "System Maintenance",
+    "backupRestore": "Backup & Restore",
+    "systemMonitoring": "System Monitoring",
+    "securitySettings": "Security Settings",
+    "auditLogs": "Audit Logs",
+    "systemReports": "System Reports",
+    "configuration": "Configuration",
+    "databaseManagement": "Database Management",
+    "apiManagement": "API Management",
+    "integrationSettings": "Integration Settings"
   },
 
   "roles": {
@@ -159,19 +421,134 @@
     "offlineFetchError": "Offline mode - could not fetch data",
     "offlineSynced": "Offline data synced!",
     "connectionLost": "Connection lost. Working offline.",
-    "connectionRestored": "Connection restored."
+    "connectionRestored": "Connection restored.",
+    "offlineMode": "Offline Mode",
+    "onlineMode": "Online Mode",
+    "syncPending": "Sync Pending",
+    "syncInProgress": "Sync in Progress",
+    "syncCompleted": "Sync Completed",
+    "syncFailed": "Sync Failed",
+    "retrySync": "Retry Sync",
+    "offlineData": "Offline Data",
+    "pendingChanges": "Pending Changes",
+    "lastSync": "Last Sync",
+    "nextSync": "Next Sync"
   },
 
   "errors": {
     "networkError": "Network error. Please check your connection.",
     "unexpectedError": "An unexpected error occurred. Please try again later.",
     "validationError": "Please check your input and try again.",
-    "permissionDenied": "You don't have permission to perform this action."
+    "permissionDenied": "You don't have permission to perform this action.",
+    "serverError": "Server error. Please try again later.",
+    "timeoutError": "Request timeout. Please try again.",
+    "notFound": "Resource not found.",
+    "unauthorized": "Unauthorized access.",
+    "forbidden": "Access forbidden.",
+    "badRequest": "Bad request. Please check your input.",
+    "conflict": "Resource conflict.",
+    "tooManyRequests": "Too many requests. Please try again later.",
+    "serviceUnavailable": "Service unavailable. Please try again later.",
+    "internalServerError": "Internal server error.",
+    "databaseError": "Database error.",
+    "fileNotFound": "File not found.",
+    "invalidFormat": "Invalid format.",
+    "missingRequiredField": "Missing required field.",
+    "invalidValue": "Invalid value.",
+    "duplicateEntry": "Duplicate entry.",
+    "constraintViolation": "Constraint violation."
   },
 
   "forbidden": {
     "title": "403 - Access Denied",
     "noPermission": "You do not have permission to view this page.",
-    "goHome": "Go to Home"
+    "goHome": "Go to Home",
+    "contactAdmin": "Contact Administrator",
+    "requestAccess": "Request Access"
+  },
+
+  "success": {
+    "operationCompleted": "Operation completed successfully",
+    "dataSaved": "Data saved successfully",
+    "dataUpdated": "Data updated successfully",
+    "dataDeleted": "Data deleted successfully",
+    "dataImported": "Data imported successfully",
+    "dataExported": "Data exported successfully",
+    "emailSent": "Email sent successfully",
+    "passwordChanged": "Password changed successfully",
+    "profileUpdated": "Profile updated successfully",
+    "settingsSaved": "Settings saved successfully",
+    "backupCreated": "Backup created successfully",
+    "restoreCompleted": "Restore completed successfully"
+  },
+
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "password": "Password must be at least 8 characters",
+    "passwordMatch": "Passwords do not match",
+    "phone": "Please enter a valid phone number",
+    "date": "Please enter a valid date",
+    "time": "Please enter a valid time",
+    "number": "Please enter a valid number",
+    "minLength": "Minimum length is {{min}} characters",
+    "maxLength": "Maximum length is {{max}} characters",
+    "minValue": "Minimum value is {{min}}",
+    "maxValue": "Maximum value is {{max}}",
+    "pattern": "Please enter a valid format",
+    "unique": "This value already exists",
+    "futureDate": "Date must be in the future",
+    "pastDate": "Date must be in the past",
+    "age": "Age must be between {{min}} and {{max}}",
+    "fileSize": "File size must be less than {{max}}MB",
+    "fileType": "Invalid file type",
+    "url": "Please enter a valid URL"
+  },
+
+  "time": {
+    "now": "Now",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "lastWeek": "Last Week",
+    "nextWeek": "Next Week",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "nextMonth": "Next Month",
+    "thisYear": "This Year",
+    "lastYear": "Last Year",
+    "nextYear": "Next Year",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "night": "Night",
+    "am": "AM",
+    "pm": "PM"
+  },
+
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
   }
 }

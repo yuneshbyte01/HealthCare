@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import API from '../../api/axios';
 
 /**
@@ -8,18 +9,17 @@ import API from '../../api/axios';
  */
 export default function AdminProfile() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    position: '',
     department: '',
-    permissions: []
+    access_level: '',
+    last_login: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState('');
+  const [profileExists, setProfileExists] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -27,37 +27,66 @@ export default function AdminProfile() {
 
   const fetchProfile = async () => {
     try {
-      const response = await API.get('/profile/admin');
-      setProfile(response.data);
+      const response = await API.get('/profile/admin/me');
+      if (response.data) {
+        const formattedProfile = {
+          ...response.data,
+          last_login: response.data.last_login 
+            ? new Date(response.data.last_login).toISOString().split('T')[0]
+            : ''
+        };
+        setProfile(formattedProfile);
+        setProfileExists(true);
+      } else {
+        setProfileExists(false);
+        setEditing(true);
+      }
     } catch (error) {
-      setMessage('Failed to load profile');
+      console.error('Error fetching profile:', error);
+      setProfileExists(false);
+      setEditing(true);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setMessage('');
-
-    try {
-      await API.put('/profile/admin', profile);
-      setMessage('Profile updated successfully');
-      setEditing(false);
-    } catch (error) {
-      setMessage('Failed to update profile');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setMessage('');
+    
+    try {
+      if (profileExists) {
+        await API.put('/profile/admin', profile);
+        setMessage(t('profile.profileUpdated'));
+      } else {
+        await API.post('/profile/admin', profile);
+        setMessage(t('profile.profileCreated'));
+        setProfileExists(true);
+      }
+      setEditing(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      setMessage(t('errors.unexpectedError'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (profileExists) {
+      setEditing(false);
+      fetchProfile();
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   if (loading) {
@@ -69,136 +98,191 @@ export default function AdminProfile() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
       <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            {t('profile.myProfile')}
-          </h1>
-
-          {message && (
-            <div className={`mb-4 p-4 rounded-md ${
-              message.includes('success') 
-                ? 'bg-green-50 text-green-800 border border-green-200' 
-                : 'bg-red-50 text-red-800 border border-red-200'
-            }`}>
-              {message}
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {t('profile.myProfile')}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {profileExists ? t('admin.systemAdministration') : t('profile.createProfile')}
+              </p>
             </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 gap-6">
-              {/* Personal Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                  {t('profile.personalInfo')}
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('common.name')}
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={profile.name}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('common.email')}
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={profile.email}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('profile.phone')}
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={profile.phone}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('profile.position')}
-                    </label>
-                    <input
-                      type="text"
-                      name="position"
-                      value={profile.position}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('profile.department')}
-                    </label>
-                    <input
-                      type="text"
-                      name="department"
-                      value={profile.department}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end space-x-3">
-              {!editing ? (
+            <div className="flex items-center space-x-3">
+              {!editing && profileExists && (
                 <button
-                  type="button"
                   onClick={() => setEditing(true)}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                 >
                   {t('common.edit')}
                 </button>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setEditing(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                  >
-                    {t('common.cancel')}
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
-                  >
-                    {saving ? t('common.loading') : t('profile.updateProfile')}
-                  </button>
-                </>
               )}
             </div>
-          </form>
+          </div>
         </div>
       </div>
+
+      {/* Success/Error Message */}
+      {message && (
+        <div className={`rounded-lg p-4 ${
+          message.includes('success') || message.includes('created') || message.includes('updated')
+            ? 'bg-green-50 border border-green-200' 
+            : 'bg-red-50 border border-red-200'
+        }`}>
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <span className={message.includes('success') || message.includes('created') || message.includes('updated') ? 'text-green-400' : 'text-red-400'}>
+                {message.includes('success') || message.includes('created') || message.includes('updated') ? '✅' : '⚠️'}
+              </span>
+            </div>
+            <div className="ml-3">
+              <p className={`text-sm ${
+                message.includes('success') || message.includes('created') || message.includes('updated')
+                  ? 'text-green-800' 
+                  : 'text-red-800'
+              }`}>
+                {message}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Form */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t('admin.systemAdministration')}
+          </h2>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Department */}
+            <div>
+              <label className="form-label">
+                {t('profile.department')} *
+              </label>
+              <input
+                type="text"
+                name="department"
+                value={profile.department}
+                onChange={handleInputChange}
+                disabled={!editing}
+                className="form-input"
+                required
+                placeholder={t('profile.departmentPlaceholder', 'e.g., IT, Operations, Management')}
+              />
+            </div>
+
+            {/* Access Level */}
+            <div>
+              <label className="form-label">
+                {t('profile.accessLevel')} *
+              </label>
+              <select
+                name="access_level"
+                value={profile.access_level}
+                onChange={handleInputChange}
+                disabled={!editing}
+                className="form-input"
+                required
+              >
+                <option value="">{t('common.select', 'Select access level')}</option>
+                <option value="super_admin">{t('admin.superAdmin', 'Super Administrator')}</option>
+                <option value="admin">{t('admin.admin', 'Administrator')}</option>
+                <option value="moderator">{t('admin.moderator', 'Moderator')}</option>
+              </select>
+            </div>
+
+            {/* Last Login (Read-only) */}
+            <div className="md:col-span-2">
+              <label className="form-label">
+                {t('profile.lastLogin')}
+              </label>
+              <input
+                type="text"
+                value={profile.last_login ? new Date(profile.last_login).toLocaleString() : t('common.never', 'Never')}
+                disabled
+                className="form-input bg-gray-50"
+                readOnly
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* System Information */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t('admin.systemInfo', 'System Information')}
+          </h2>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-medium text-blue-900 mb-2">{t('admin.permissions')}</h3>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• {t('admin.userManagement')}</li>
+                <li>• {t('admin.systemSettings')}</li>
+                <li>• {t('admin.systemLogs')}</li>
+                <li>• {t('admin.aiManagement', 'AI Management')}</li>
+              </ul>
+            </div>
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h3 className="font-medium text-green-900 mb-2">{t('admin.systemStatus', 'System Status')}</h3>
+              <div className="text-sm text-green-800 space-y-1">
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  {t('admin.systemOnline', 'System Online')}
+                </div>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  {t('admin.databaseConnected', 'Database Connected')}
+                </div>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  {t('admin.aiModelsActive', 'AI Models Active')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      {editing && (
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-end space-x-3">
+              <button
+                onClick={handleCancel}
+                disabled={saving}
+                className="btn btn-outline"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="btn btn-primary"
+              >
+                {saving ? (
+                  <span className="flex items-center">
+                    <div className="spinner mr-2"></div>
+                    {t('common.loading')}
+                  </span>
+                ) : (
+                  profileExists ? t('profile.updateProfile') : t('profile.saveProfile')
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

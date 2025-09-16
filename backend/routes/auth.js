@@ -35,6 +35,7 @@ router.post("/register", async (req, res) => {
  * POST /api/auth/login
  * Authenticate a user and issue a JWT.
  * Also check if the user's role-specific profile exists.
+ * Updates last_login timestamp.
  */
 router.post("/login", async (req, res) => {
   try {
@@ -52,6 +53,20 @@ router.post("/login", async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
       return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    // Update last_login timestamp
+    await pool.query(
+      "UPDATE users SET last_login = NOW() WHERE id = $1",
+      [user.id]
+    );
+
+    // Also update last_login in role-specific table if it exists
+    if (user.role === "admin") {
+      await pool.query(
+        "UPDATE admins SET last_login = NOW() WHERE admin_id = $1",
+        [user.id]
+      );
     }
 
     // Generate JWT with id + role
@@ -85,6 +100,7 @@ router.post("/login", async (req, res) => {
         role: user.role,
         phone: user.phone,
         preferred_language: user.preferred_language,
+        last_login: new Date().toISOString(), // Include current login time in response
       },
       profileComplete, // frontend will use this to decide if profile form should show
     });
@@ -92,6 +108,45 @@ router.post("/login", async (req, res) => {
     console.error("Login error:", err.message);
     res.status(500).json({
       error: "Login failed",
+      details: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
+  }
+});
+
+/**
+ * POST /api/auth/logout
+ * Logout endpoint (optional - mainly for logging purposes)
+ */
+router.post("/logout", async (req, res) => {
+  try {
+    // In a more sophisticated system, you might want to:
+    // 1. Add the token to a blacklist
+    // 2. Log the logout event
+    // 3. Update user status
+    
+    res.json({ message: "Logout successful" });
+  } catch (err) {
+    console.error("Logout error:", err.message);
+    res.status(500).json({
+      error: "Logout failed",
+      details: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
+  }
+});
+
+/**
+ * GET /api/auth/me
+ * Get current user information (requires authentication)
+ */
+router.get("/me", async (req, res) => {
+  try {
+    // This would require auth middleware
+    // For now, just return a placeholder
+    res.json({ message: "This endpoint requires authentication middleware" });
+  } catch (err) {
+    console.error("Get user error:", err.message);
+    res.status(500).json({
+      error: "Failed to get user information",
       details: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }

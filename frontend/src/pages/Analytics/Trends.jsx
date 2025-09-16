@@ -1,165 +1,242 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 
 /**
  * Analytics Trends Component
- * Shows various charts and trends (simplified version without Chart.js)
+ * Shows appointment trends, urgency distribution, and no-show patterns
  */
 export default function AnalyticsTrends() {
   const { t } = useTranslation();
-  const [trendsData, setTrendsData] = useState({});
+  const { role } = useAuth();
+  const [trendsData, setTrendsData] = useState({
+    urgency_distribution: [],
+    daily_trends: [],
+    noshow_risk_distribution: [],
+    total_appointments: 0
+  });
   const [loading, setLoading] = useState(true);
-  const [selectedPeriod, setSelectedPeriod] = useState('7d');
+  const [message, setMessage] = useState('');
 
   const fetchTrendsData = useCallback(async () => {
     try {
-      const response = await API.get(`/analytics/trends?period=${selectedPeriod}`);
+      const response = await API.get('/analytics/trends');
       setTrendsData(response.data);
     } catch (error) {
       console.error('Error fetching trends data:', error);
-      // Mock data for development
-      setTrendsData({
-        metrics: {
-          totalAppointments: 150,
-          completedAppointments: 120,
-          noShows: 15,
-          avgNoShowRate: 10
-        },
-        appointmentTrends: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          data: [20, 25, 22, 28, 30, 15, 10]
-        },
-        noShowRate: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          data: [8, 12, 10, 15, 9, 5, 7]
-        },
-        appointmentTypes: {
-          labels: ['General', 'Emergency', 'Follow-up', 'Consultation', 'Other'],
-          data: [40, 15, 25, 15, 5]
-        }
-      });
+      setMessage('Failed to load trends data');
     } finally {
       setLoading(false);
     }
-  }, [selectedPeriod]);
+  }, []);
 
   useEffect(() => {
     fetchTrendsData();
   }, [fetchTrendsData]);
 
+  const getUrgencyColor = (urgency) => {
+    switch (urgency) {
+      case 'urgent': return 'bg-red-100 text-red-800';
+      case 'moderate': return 'bg-yellow-100 text-yellow-800';
+      case 'routine': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getRiskColor = (risk) => {
+    switch (risk) {
+      case 'high_risk': return 'bg-red-100 text-red-800';
+      case 'medium_risk': return 'bg-yellow-100 text-yellow-800';
+      case 'low_risk': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg">{t('common.loading')}</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">{t('common.loading')}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {t('analytics.trends')} / प्रवृत्ति
+    <div className="min-h-screen bg-gray-50 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+          <div className="px-6 py-4 bg-primary-600">
+            <h1 className="text-2xl font-bold text-white">
+              {t('analytics.trends')}
             </h1>
-            
-            <select
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="7d">Last 7 Days</option>
-              <option value="30d">Last 30 Days</option>
-              <option value="90d">Last 90 Days</option>
-            </select>
           </div>
 
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="text-2xl font-bold text-blue-600">{trendsData.metrics?.totalAppointments || 0}</div>
-              <div className="text-sm text-blue-600">Total Appointments</div>
-            </div>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="text-2xl font-bold text-green-600">{trendsData.metrics?.completedAppointments || 0}</div>
-              <div className="text-sm text-green-600">Completed</div>
-            </div>
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="text-2xl font-bold text-red-600">{trendsData.metrics?.noShows || 0}</div>
-              <div className="text-sm text-red-600">No-Shows</div>
-            </div>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="text-2xl font-bold text-yellow-600">{trendsData.metrics?.avgNoShowRate || 0}%</div>
-              <div className="text-sm text-yellow-600">Avg No-Show Rate</div>
-            </div>
-          </div>
+          <div className="p-6">
+            {message && (
+              <div className="mb-4 p-4 rounded-md bg-red-50 text-red-800 border border-red-200">
+                {message}
+              </div>
+            )}
 
-          {/* Simple Chart Placeholders */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Appointment Trends */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Appointment Trends</h3>
-              <div className="space-y-2">
-                {trendsData.appointmentTrends?.labels?.map((label, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">{label}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
-                          style={{ width: `${(trendsData.appointmentTrends.data[index] / Math.max(...trendsData.appointmentTrends.data)) * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-gray-600 w-8 text-right">{trendsData.appointmentTrends.data[index]}</span>
-                    </div>
-                  </div>
-                ))}
+            {/* Summary Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="text-2xl font-bold text-blue-600">{trendsData.total_appointments}</div>
+                <div className="text-sm text-blue-600">Total Appointments</div>
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="text-2xl font-bold text-green-600">
+                  {trendsData.urgency_distribution.find(u => u.urgency === 'routine')?.count || 0}
+                </div>
+                <div className="text-sm text-green-600">Routine Cases</div>
+              </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="text-2xl font-bold text-yellow-600">
+                  {trendsData.urgency_distribution.find(u => u.urgency === 'moderate')?.count || 0}
+                </div>
+                <div className="text-sm text-yellow-600">Moderate Cases</div>
+              </div>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="text-2xl font-bold text-red-600">
+                  {trendsData.urgency_distribution.find(u => u.urgency === 'urgent')?.count || 0}
+                </div>
+                <div className="text-sm text-red-600">Urgent Cases</div>
               </div>
             </div>
 
-            {/* No-Show Rate */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">No-Show Rate by Day</h3>
-              <div className="space-y-2">
-                {trendsData.noShowRate?.labels?.map((label, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">{label}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-red-600 h-2 rounded-full" 
-                          style={{ width: `${trendsData.noShowRate.data[index]}%` }}
-                        ></div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Urgency Distribution */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Urgency Distribution</h3>
+                <div className="space-y-3">
+                  {trendsData.urgency_distribution.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-900 capitalize">{item.urgency}</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-24 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              item.urgency === 'urgent' ? 'bg-red-500' :
+                              item.urgency === 'moderate' ? 'bg-yellow-500' :
+                              'bg-green-500'
+                            }`}
+                            style={{ 
+                              width: `${(parseInt(item.count) / trendsData.total_appointments) * 100}%` 
+                            }}
+                          ></div>
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full ${getUrgencyColor(item.urgency)}`}>
+                          {item.count}
+                        </span>
                       </div>
-                      <span className="text-sm text-gray-600 w-8 text-right">{trendsData.noShowRate.data[index]}%</span>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              {/* No-Show Risk Distribution */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">No-Show Risk Distribution</h3>
+                <div className="space-y-3">
+                  {trendsData.noshow_risk_distribution.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-900 capitalize">
+                        {item.risk_category.replace('_', ' ')}
+                      </span>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-24 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              item.risk_category === 'high_risk' ? 'bg-red-500' :
+                              item.risk_category === 'medium_risk' ? 'bg-yellow-500' :
+                              'bg-green-500'
+                            }`}
+                            style={{ 
+                              width: `${(parseInt(item.count) / trendsData.total_appointments) * 100}%` 
+                            }}
+                          ></div>
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full ${getRiskColor(item.risk_category)}`}>
+                          {item.count}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Appointment Types Distribution */}
-          <div className="mt-6">
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Appointment Types Distribution</h3>
-              <div className="space-y-2">
-                {trendsData.appointmentTypes?.labels?.map((label, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">{label}</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-purple-600 h-2 rounded-full" 
-                          style={{ width: `${(trendsData.appointmentTypes.data[index] / Math.max(...trendsData.appointmentTypes.data)) * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-gray-600 w-8 text-right">{trendsData.appointmentTypes.data[index]}%</span>
-                    </div>
-                  </div>
-                ))}
+            {/* Daily Trends */}
+            <div className="mt-6">
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Trends (Last 7 Days)</h3>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Urgency
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Count
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {trendsData.daily_trends.map((trend, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {new Date(trend.appointment_date).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getUrgencyColor(trend.urgency)}`}>
+                              {trend.urgency}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {trend.count}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* AI Insights */}
+            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-blue-900 mb-4">AI Insights</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">Most Common Urgency</h4>
+                  <p className="text-sm text-gray-600">
+                    {trendsData.urgency_distribution.length > 0 
+                      ? trendsData.urgency_distribution.reduce((max, item) => 
+                          parseInt(item.count) > parseInt(max.count) ? item : max
+                        ).urgency
+                      : 'N/A'
+                    }
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">High Risk Appointments</h4>
+                  <p className="text-sm text-gray-600">
+                    {trendsData.noshow_risk_distribution.find(r => r.risk_category === 'high_risk')?.count || 0}
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-2">System Health</h4>
+                  <p className="text-sm text-gray-600">
+                    {trendsData.total_appointments > 0 ? 'Active' : 'No Data'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>

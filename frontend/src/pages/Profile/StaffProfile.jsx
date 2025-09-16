@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import API from '../../api/axios';
 
 /**
@@ -8,19 +9,19 @@ import API from '../../api/axios';
  */
 export default function StaffProfile() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({
-    name: '',
-    email: '',
-    phone: '',
     position: '',
     department: '',
-    workSchedule: '',
-    permissions: []
+    work_schedule: '',
+    phone: '',
+    address: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState('');
+  const [profileExists, setProfileExists] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -28,32 +29,24 @@ export default function StaffProfile() {
 
   const fetchProfile = async () => {
     try {
-      const response = await API.get('/profile/clinic-staff');
-      setProfile(response.data);
+      const response = await API.get('/profile/clinic-staff/me');
+      if (response.data) {
+        setProfile(response.data);
+        setProfileExists(true);
+      } else {
+        setProfileExists(false);
+        setEditing(true);
+      }
     } catch (error) {
-      setMessage('Failed to load profile');
+      console.error('Error fetching profile:', error);
+      setProfileExists(false);
+      setEditing(true);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setMessage('');
-
-    try {
-      await API.put('/profile/clinic-staff', profile);
-      setMessage('Profile updated successfully');
-      setEditing(false);
-    } catch (error) {
-      setMessage('Failed to update profile');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({
       ...prev,
@@ -61,171 +54,225 @@ export default function StaffProfile() {
     }));
   };
 
+  const handleSave = async () => {
+    setSaving(true);
+    setMessage('');
+    
+    try {
+      if (profileExists) {
+        await API.put('/profile/clinic-staff', profile);
+        setMessage(t('profile.profileUpdated'));
+      } else {
+        await API.post('/profile/clinic-staff', profile);
+        setMessage(t('profile.profileCreated'));
+        setProfileExists(true);
+      }
+      setEditing(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      setMessage(t('errors.unexpectedError'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (profileExists) {
+      setEditing(false);
+      fetchProfile();
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">{t('common.loading')}</p>
-        </div>
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg">{t('common.loading')}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow-lg rounded-xl overflow-hidden">
-          <div className="px-6 py-4 bg-primary-600">
-            <h1 className="text-2xl font-bold text-white">
-              {t('profile.myProfile')}
-            </h1>
-          </div>
-
-          <div className="p-6">
-            {message && (
-              <div className={`mb-4 p-4 rounded-md ${
-                message.includes('success') 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}>
-                {message}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Personal Information */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                    {t('profile.personalInfo')}
-                  </h3>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('common.name')}
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={profile.name}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('common.email')}
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={profile.email}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('profile.phone')}
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={profile.phone}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-                </div>
-
-                {/* Professional Information */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                    Professional Information
-                  </h3>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('profile.position')}
-                    </label>
-                    <input
-                      type="text"
-                      name="position"
-                      value={profile.position}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('profile.department')}
-                    </label>
-                    <input
-                      type="text"
-                      name="department"
-                      value={profile.department}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('profile.workSchedule')}
-                    </label>
-                    <textarea
-                      name="workSchedule"
-                      value={profile.workSchedule}
-                      onChange={handleChange}
-                      disabled={!editing}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-100"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-3">
-                {!editing ? (
-                  <button
-                    type="button"
-                    onClick={() => setEditing(true)}
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                  >
-                    {t('common.edit')}
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setEditing(false)}
-                      className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                    >
-                      {t('common.cancel')}
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
-                    >
-                      {saving ? t('common.loading') : t('profile.updateProfile')}
-                    </button>
-                  </>
-                )}
-              </div>
-            </form>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {t('profile.myProfile')}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {profileExists ? t('profile.workInfo', 'Work Information') : t('profile.createProfile')}
+              </p>
+            </div>
+            <div className="flex items-center space-x-3">
+              {!editing && profileExists && (
+                <button
+                  onClick={() => setEditing(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  {t('common.edit')}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Success/Error Message */}
+      {message && (
+        <div className={`rounded-lg p-4 ${
+          message.includes('success') || message.includes('created') || message.includes('updated')
+            ? 'bg-green-50 border border-green-200' 
+            : 'bg-red-50 border border-red-200'
+        }`}>
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <span className={message.includes('success') || message.includes('created') || message.includes('updated') ? 'text-green-400' : 'text-red-400'}>
+                {message.includes('success') || message.includes('created') || message.includes('updated') ? '✅' : '⚠️'}
+              </span>
+            </div>
+            <div className="ml-3">
+              <p className={`text-sm ${
+                message.includes('success') || message.includes('created') || message.includes('updated')
+                  ? 'text-green-800' 
+                  : 'text-red-800'
+              }`}>
+                {message}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Form */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t('profile.workInfo', 'Work Information')}
+          </h2>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Position */}
+            <div>
+              <label className="form-label">
+                {t('profile.position')} *
+              </label>
+              <input
+                type="text"
+                name="position"
+                value={profile.position}
+                onChange={handleInputChange}
+                disabled={!editing}
+                className="form-input"
+                required
+                placeholder={t('profile.positionPlaceholder', 'e.g., Doctor, Nurse, Receptionist')}
+              />
+            </div>
+
+            {/* Department */}
+            <div>
+              <label className="form-label">
+                {t('profile.department')} *
+              </label>
+              <input
+                type="text"
+                name="department"
+                value={profile.department}
+                onChange={handleInputChange}
+                disabled={!editing}
+                className="form-input"
+                required
+                placeholder={t('profile.departmentPlaceholder', 'e.g., Cardiology, Emergency, General')}
+              />
+            </div>
+
+            {/* Work Schedule */}
+            <div>
+              <label className="form-label">
+                {t('profile.workSchedule')}
+              </label>
+              <input
+                type="text"
+                name="work_schedule"
+                value={profile.work_schedule}
+                onChange={handleInputChange}
+                disabled={!editing}
+                className="form-input"
+                placeholder={t('profile.workSchedulePlaceholder', 'e.g., Monday-Friday 9AM-5PM')}
+              />
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className="form-label">
+                {t('profile.phone')} *
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={profile.phone}
+                onChange={handleInputChange}
+                disabled={!editing}
+                className="form-input"
+                required
+                placeholder={t('profile.phonePlaceholder', 'Contact phone number')}
+              />
+            </div>
+
+            {/* Address */}
+            <div className="md:col-span-2">
+              <label className="form-label">
+                {t('profile.address')} *
+              </label>
+              <textarea
+                name="address"
+                value={profile.address}
+                onChange={handleInputChange}
+                disabled={!editing}
+                className="form-input"
+                rows={3}
+                required
+                placeholder={t('profile.addressPlaceholder', 'Enter your full address')}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      {editing && (
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-end space-x-3">
+              <button
+                onClick={handleCancel}
+                disabled={saving}
+                className="btn btn-outline"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="btn btn-primary"
+              >
+                {saving ? (
+                  <span className="flex items-center">
+                    <div className="spinner mr-2"></div>
+                    {t('common.loading')}
+                  </span>
+                ) : (
+                  profileExists ? t('profile.updateProfile') : t('profile.saveProfile')
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

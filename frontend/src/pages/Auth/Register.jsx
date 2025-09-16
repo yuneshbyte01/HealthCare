@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 
 /**
  * Register Component
- * Handles user registration with name, email, password, and role
+ * Handles user registration with name, email, password, role, phone, and preferred language
  */
 export default function Register() {
   const { t } = useTranslation();
-  const { login } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -18,10 +16,13 @@ export default function Register() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'patient'
+    role: 'patient',
+    phone: '',
+    preferred_language: 'nepali'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -34,9 +35,17 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
+    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
       setLoading(false);
       return;
     }
@@ -46,14 +55,34 @@ export default function Register() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        role: formData.role
+        role: formData.role,
+        phone: formData.phone || null,
+        preferred_language: formData.preferred_language
       });
 
-      const { token, user, role } = response.data;
-      login(token, user, role);
-      navigate('/dashboard');
+      // Backend returns: { message: "User registered", user: {...} }
+      const { message, user } = response.data;
+      setSuccess(message + ' Please log in to continue.');
+      
+      // Clear form
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        role: 'patient',
+        phone: '',
+        preferred_language: 'nepali'
+      });
+
+      // Redirect to login after a short delay
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      console.error('Registration error:', err);
+      setError(err.response?.data?.error || err.response?.data?.details || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -83,10 +112,16 @@ export default function Register() {
             </div>
           )}
 
+          {success && (
+            <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+              {success}
+            </div>
+          )}
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                {t('common.name')}
+                {t('common.name')} *
               </label>
               <input
                 id="name"
@@ -102,7 +137,7 @@ export default function Register() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                {t('auth.emailLabel')}
+                {t('auth.emailLabel')} *
               </label>
               <input
                 id="email"
@@ -117,8 +152,23 @@ export default function Register() {
             </div>
 
             <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                placeholder="+977-XXXXXXXXX"
+              />
+            </div>
+
+            <div>
               <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                Role
+                Role *
               </label>
               <select
                 id="role"
@@ -134,24 +184,42 @@ export default function Register() {
             </div>
 
             <div>
+              <label htmlFor="preferred_language" className="block text-sm font-medium text-gray-700">
+                Preferred Language
+              </label>
+              <select
+                id="preferred_language"
+                name="preferred_language"
+                value={formData.preferred_language}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="nepali">नेपाली (Nepali)</option>
+                <option value="english">English</option>
+              </select>
+            </div>
+
+            <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                {t('auth.passwordLabel')}
+                {t('auth.passwordLabel')} *
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
+                minLength={6}
                 value={formData.password}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 placeholder="••••••••"
               />
+              <p className="mt-1 text-xs text-gray-500">Minimum 6 characters</p>
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                {t('auth.confirmPassword')}
+                {t('auth.confirmPassword')} *
               </label>
               <input
                 id="confirmPassword"

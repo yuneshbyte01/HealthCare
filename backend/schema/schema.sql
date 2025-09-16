@@ -60,6 +60,9 @@ CREATE TABLE clinic_staff (
 -- ======================
 CREATE TABLE admins (
   admin_id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  department VARCHAR(100),
+  access_level VARCHAR(50),
+  last_login TIMESTAMP,
   permissions JSONB, -- e.g., {"manage_users": true, "delete_logs": false}
   notes TEXT
 );
@@ -76,6 +79,7 @@ CREATE TABLE appointments (
   status VARCHAR(20) DEFAULT 'scheduled', -- scheduled, completed, cancelled
   urgency VARCHAR(20), -- AI triage: urgent, moderate, routine
   no_show_risk NUMERIC(3,2), -- probability from AI model (0.00–1.00)
+  symptoms TEXT, -- Added symptoms field for AI triage
   synced BOOLEAN DEFAULT false, -- for offline sync
   last_updated TIMESTAMP DEFAULT NOW(),
   created_at TIMESTAMP DEFAULT NOW()

@@ -1,6 +1,6 @@
 {
   "common": {
-    "welcome": "स्वास्थ्य एआई प्रणालीमा स्वागत छ",
+    "welcome": "स्वागत छ",
     "home": "गृहपृष्ठ",
     "login": "लगइन",
     "register": "दर्ता गर्नुहोस्",
@@ -18,25 +18,117 @@
     "success": "सफलता",
     "error": "त्रुटि",
     "confirm": "पुष्टि गर्नुहोस्",
-    "greeting": "स्वागत छ, {{name}}"
+    "greeting": "स्वागत छ, {{name}}",
+    "getStarted": "सुरु गर्नुहोस्",
+    "goToDashboard": "ड्यासबोर्डमा जानुहोस्",
+    "failedToLoad": "लोड गर्न असफल",
+    "tryAgain": "पुन: प्रयास गर्नुहोस्",
+    "pleaseWait": "कृपया पर्खनुहोस्",
+    "noData": "कुनै डेटा उपलब्ध छैन",
+    "search": "खोज्नुहोस्",
+    "filter": "फिल्टर गर्नुहोस्",
+    "sort": "क्रमबद्ध गर्नुहोस्",
+    "export": "निर्यात गर्नुहोस्",
+    "import": "आयात गर्नुहोस्",
+    "back": "फिर्ता",
+    "next": "अर्को",
+    "previous": "अघिल्लो",
+    "submit": "पेश गर्नुहोस्",
+    "reset": "रिसेट गर्नुहोस्",
+    "clear": "सफा गर्नुहोस्",
+    "close": "बन्द गर्नुहोस्",
+    "open": "खोल्नुहोस्",
+    "yes": "हो",
+    "no": "होइन",
+    "ok": "ठीक छ",
+    "warning": "चेतावनी",
+    "info": "जानकारी",
+    "alert": "सचेतना",
+    "notification": "सूचना",
+    "message": "सन्देश",
+    "phone": "फोन",
+    "address": "ठेगाना",
+    "date": "मिति",
+    "time": "समय",
+    "location": "स्थान",
+    "description": "विवरण",
+    "notes": "टिप्पणीहरू",
+    "comments": "टिप्पणीहरू",
+    "feedback": "प्रतिक्रिया",
+    "support": "सहयोग",
+    "help": "मद्दत",
+    "about": "बारेमा",
+    "contact": "सम्पर्क",
+    "settings": "सेटिङहरू",
+    "language": "भाषा"
   },
 
-  "homePage": {
-    "homeMessage": "कृपया लगइन वा दर्ता गरेर जारी राख्नुहोस्।"
+  "home": {
+    "title": "ग्रामीण नेपालका लागि स्मार्ट स्वास्थ्य सेवा",
+    "subtitle": "ग्रामीण स्वास्थ्य सेवा पहुँचका लागि डिजाइन गरिएको एआई-शक्ति प्राप्त भेटघाट प्रणाली",
+    "features": {
+      "title": "मुख्य विशेषताहरू",
+      "subtitle": "आधुनिक स्वास्थ्य सेवा व्यवस्थापनका लागि तपाईंलाई चाहिने सबै कुरा",
+      "ai": {
+        "title": "एआई-शक्ति प्राप्त ट्रायज",
+        "description": "एआई-चालित तात्कालिकता मूल्याङ्कनका साथ स्मार्ट भेटघाट तालिका"
+      },
+      "mobile": {
+        "title": "मोबाइल-प्रथम डिजाइन",
+        "description": "अफलाइन क्षमताहरूका साथ मोबाइल उपकरणहरूका लागि अनुकूलित"
+      },
+      "multilingual": {
+        "title": "बहुभाषिक सहयोग",
+        "description": "राम्रो पहुँचका लागि अङ्ग्रेजी र नेपालीमा उपलब्ध"
+      },
+      "analytics": {
+        "title": "वास्तविक समय विश्लेषण",
+        "description": "स्वास्थ्य सेवा प्रदायकहरूका लागि व्यापक अन्तर्दृष्टि र रिपोर्टिङ"
+      },
+      "security": {
+        "title": "सुरक्षित र निजी",
+        "description": "अन्त-देखि-अन्त एन्क्रिप्शनका साथ HIPAA-अनुपालित"
+      },
+      "fast": {
+        "title": "छिटो र विश्वसनीय",
+        "description": "९९.९% अपटाइमका साथ बिजुली-छिटो प्रदर्शन"
+      }
+    },
+    "stats": {
+      "title": "स्वास्थ्य सेवा प्रदायकहरूद्वारा विश्वसनीय",
+      "appointments": "भेटघाटहरू तालिकाबद्ध",
+      "users": "सक्रिय प्रयोगकर्ताहरू",
+      "uptime": "प्रणाली अपटाइम"
+    },
+    "cta": {
+      "title": "स्वास्थ्य सेवा परिवर्तन गर्न तयार हुनुहुन्छ?",
+      "subtitle": "हाम्रो एआई-शक्ति प्राप्त प्लेटफर्म प्रयोग गर्ने हजारौं स्वास्थ्य सेवा प्रदायकहरूमा सामेल हुनुहोस्",
+      "getStarted": "आज सुरु गर्नुहोस्"
+    }
   },
 
   "auth": {
     "loginTitle": "साइन इन गर्नुहोस्",
-    "registerTitle": "दर्ता गर्नुहोस्",
-    "emailLabel": "इमेल",
+    "loginSubtitle": "फेरी स्वागत छ! कृपया आफ्नो खातामा साइन इन गर्नुहोस्",
+    "registerTitle": "खाता बनाउनुहोस्",
+    "registerSubtitle": "आज हाम्रो स्वास्थ्य सेवा प्लेटफर्ममा सामेल हुनुहोस्",
+    "email": "इमेल ठेगाना",
+    "emailLabel": "इमेल ठेगाना",
+    "password": "पासवर्ड",
     "passwordLabel": "पासवर्ड",
     "confirmPassword": "पासवर्ड पुष्टि गर्नुहोस्",
-    "loginButton": "लगइन गर्नुहोस्",
-    "registerButton": "दर्ता गर्नुहोस्",
+    "loginButton": "साइन इन गर्नुहोस्",
+    "registerButton": "खाता बनाउनुहोस्",
     "registerSuccess": "दर्ता सफल भयो! कृपया लगइन गर्नुहोस्।",
     "registerFailed": "दर्ता असफल भयो। कृपया पुन: प्रयास गर्नुहोस्।",
     "loginFailed": "लगइन असफल भयो। कृपया प्रमाणहरू जाँच गर्नुहोस्।",
-    "loginSuccess": "लगइन सफल भयो! फेरी स्वागत छ।"
+    "loginSuccess": "लगइन सफल भयो! फेरी स्वागत छ।",
+    "forgotPassword": "पासवर्ड बिर्सनुभयो?",
+    "rememberMe": "मलाई सम्झनुहोस्",
+    "dontHaveAccount": "खाता छैन?",
+    "alreadyHaveAccount": "पहिले नै खाता छ?",
+    "signUp": "साइन अप गर्नुहोस्",
+    "signIn": "साइन इन गर्नुहोस्"
   },
 
   "dashboard": {
@@ -45,24 +137,40 @@
       "title": "रोगी ड्यासबोर्ड",
       "nextAppointment": "अर्को भेटघाट",
       "quickBook": "छिटो भेटघाट बुक गर्नुहोस्",
-      "recentActivity": "हालको गतिविधि"
+      "recentActivity": "हालको गतिविधि",
+      "healthStats": "स्वास्थ्य तथ्याङ्क",
+      "totalAppointments": "कुल भेटघाटहरू",
+      "upcomingAppointments": "आगामी भेटघाटहरू",
+      "completedAppointments": "पूरा भएका भेटघाटहरू",
+      "noUpcomingAppointments": "कुनै आगामी भेटघाटहरू छैनन्",
+      "bookNewAppointment": "नयाँ भेटघाट बुक गर्नुहोस्"
     },
     "staff": {
       "title": "कर्मचारी ड्यासबोर्ड",
       "urgentCases": "तत्कालका केसहरू",
       "alertsPreview": "सचेतना पूर्वावलोकन",
-      "todayAppointments": "आजका भेटघाटहरू"
+      "todayAppointments": "आजका भेटघाटहरू",
+      "systemStats": "प्रणाली तथ्याङ्क",
+      "totalPatients": "कुल रोगीहरू",
+      "appointmentsToday": "आजका भेटघाटहरू",
+      "urgentCasesCount": "तत्कालका केसहरू",
+      "systemHealth": "प्रणाली स्वास्थ्य"
     },
     "admin": {
       "title": "प्रशासक ड्यासबोर्ड",
       "systemStats": "प्रणाली तथ्याङ्क",
       "aiRetrainStatus": "एआई पुन: तालिम स्थिति",
-      "performanceSnapshot": "प्रदर्शन झलक"
+      "performanceSnapshot": "प्रदर्शन झलक",
+      "totalUsers": "कुल प्रयोगकर्ताहरू",
+      "totalAppointments": "कुल भेटघाटहरू",
+      "systemUptime": "प्रणाली अपटाइम",
+      "aiModelStatus": "एआई मोडेल स्थिति"
     }
   },
 
   "appointments": {
     "title": "भेटघाटहरू",
+    "appointments": "भेटघाटहरू",
     "myAppointments": "मेरो भेटघाटहरू",
     "allAppointments": "सबै भेटघाटहरू",
     "book": "बुक गर्नुहोस्",
@@ -79,7 +187,48 @@
     "pending": "बाँकी",
     "confirmed": "पुष्टि भएको",
     "cancelled": "रद्द भएको",
-    "completed": "पूरा भएको"
+    "completed": "पूरा भएको",
+    "scheduled": "तालिकाबद्ध",
+    "inProgress": "प्रगतिमा",
+    "noShow": "नो-शो",
+    "urgent": "तत्काल",
+    "high": "उच्च",
+    "medium": "मध्यम",
+    "low": "निम्न",
+    "symptoms": "लक्षणहरू",
+    "urgencyLevel": "तात्कालिकता स्तर",
+    "riskScore": "जोखिम स्कोर",
+    "recommendation": "सिफारिस",
+    "clinic": "क्लिनिक",
+    "staff": "कर्मचारी",
+    "patient": "रोगी",
+    "appointmentDetails": "भेटघाट विवरण",
+    "appointmentHistory": "भेटघाट इतिहास",
+    "upcomingAppointments": "आगामी भेटघाटहरू",
+    "pastAppointments": "भूतकालका भेटघाटहरू",
+    "noAppointments": "कुनै भेटघाटहरू फेला परेनन्",
+    "noUpcomingAppointments": "कुनै आगामी भेटघाटहरू छैनन्",
+    "bookNewAppointment": "नयाँ भेटघाट बुक गर्नुहोस्",
+    "selectDate": "मिति छान्नुहोस्",
+    "selectTime": "समय छान्नुहोस्",
+    "selectClinic": "क्लिनिक छान्नुहोस्",
+    "selectStaff": "कर्मचारी छान्नुहोस्",
+    "enterSymptoms": "लक्षणहरू प्रविष्ट गर्नुहोस्",
+    "appointmentBooked": "भेटघाट सफलतापूर्वक बुक भयो",
+    "appointmentCancelled": "भेटघाट सफलतापूर्वक रद्द भयो",
+    "appointmentRescheduled": "भेटघाट सफलतापूर्वक मिति परिवर्तन भयो",
+    "appointmentUpdated": "भेटघाट सफलतापूर्वक अपडेट भयो",
+    "appointmentNotFound": "भेटघाट फेला परेन",
+    "invalidDate": "अवैध मिति छानिएको",
+    "invalidTime": "अवैध समय छानिएको",
+    "clinicNotAvailable": "क्लिनिक उपलब्ध छैन",
+    "staffNotAvailable": "कर्मचारी उपलब्ध छैन",
+    "timeSlotNotAvailable": "समय स्लट उपलब्ध छैन",
+    "symptomsRequired": "लक्षणहरू आवश्यक छन्",
+    "dateRequired": "मिति आवश्यक छ",
+    "timeRequired": "समय आवश्यक छ",
+    "clinicRequired": "क्लिनिक आवश्यक छ",
+    "staffRequired": "कर्मचारी आवश्यक छ"
   },
 
   "profile": {
@@ -100,7 +249,26 @@
     "workSchedule": "कार्य तालिका",
     "permissions": "अनुमतिहरू",
     "saveProfile": "प्रोफाइल सुरक्षित गर्नुहोस्",
-    "updateProfile": "प्रोफाइल अपडेट गर्नुहोस्"
+    "updateProfile": "प्रोफाइल अपडेट गर्नुहोस्",
+    "profileCreated": "प्रोफाइल सफलतापूर्वक बनाइयो",
+    "profileUpdated": "प्रोफाइल सफलतापूर्वक अपडेट भयो",
+    "profileNotFound": "प्रोफाइल फेला परेन",
+    "profileIncomplete": "प्रोफाइल अपूर्ण",
+    "completeProfileFirst": "कृपया पहिले आफ्नो प्रोफाइल पूरा गर्नुहोस्",
+    "bloodGroup": "रक्त समूह",
+    "allergies": "एलर्जीहरू",
+    "chronicConditions": "दीर्घकालीन अवस्थाहरू",
+    "emergencyContact": "आपतकालीन सम्पर्क",
+    "accessLevel": "पहुँच स्तर",
+    "lastLogin": "अन्तिम लगइन",
+    "profilePicture": "प्रोफाइल तस्बिर",
+    "uploadPicture": "तस्बिर अपलोड गर्नुहोस्",
+    "removePicture": "तस्बिर हटाउनुहोस्",
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य",
+    "english": "अङ्ग्रेजी",
+    "nepali": "नेपाली"
   },
 
   "ai": {
@@ -114,7 +282,32 @@
     "noShowModel": "नो-शो मोडेल",
     "modelPerformance": "मोडेल प्रदर्शन",
     "accuracy": "शुद्धता",
-    "lastTrained": "अन्तिम तालिम"
+    "lastTrained": "अन्तिम तालिम",
+    "modelStatus": "मोडेल स्थिति",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "training": "तालिम",
+    "ready": "तयार",
+    "error": "त्रुटि",
+    "retrainSuccess": "मोडेलहरू सफलतापूर्वक पुन: तालिम भयो",
+    "retrainFailed": "मोडेल पुन: तालिम असफल भयो",
+    "retrainInProgress": "मोडेल पुन: तालिम प्रगतिमा छ",
+    "testModels": "एआई मोडेलहरू परीक्षण गर्नुहोस्",
+    "getAIRecommendations": "एआई सिफारिसहरू प्राप्त गर्नुहोस्",
+    "modelAccuracy": "मोडेल शुद्धता",
+    "predictionAccuracy": "भविष्यवाणी शुद्धता",
+    "triageAccuracy": "ट्रायज शुद्धता",
+    "noShowAccuracy": "नो-शो शुद्धता",
+    "lastRetrain": "अन्तिम पुन: तालिम",
+    "nextRetrain": "अर्को पुन: तालिम",
+    "retrainNow": "अहिले पुन: तालिम",
+    "retrainScheduled": "पुन: तालिम तालिकाबद्ध",
+    "retrainHistory": "पुन: तालिम इतिहास",
+    "modelMetrics": "मोडेल मेट्रिक्स",
+    "performanceMetrics": "प्रदर्शन मेट्रिक्स",
+    "trainingData": "तालिम डेटा",
+    "validationData": "प्रमाणीकरण डेटा",
+    "testData": "परीक्षण डेटा"
   },
 
   "analytics": {
@@ -127,7 +320,37 @@
     "noShowRate": "नो-शो दर",
     "capacityUtilization": "क्षमता उपयोग",
     "patientSatisfaction": "रोगी सन्तुष्टि",
-    "systemHealth": "प्रणाली स्वास्थ्य"
+    "systemHealth": "प्रणाली स्वास्थ्य",
+    "appointmentTrends": "भेटघाट प्रवृत्तिहरू",
+    "urgencyDistribution": "तात्कालिकता वितरण",
+    "dailyTrends": "दैनिक प्रवृत्तिहरू",
+    "noshowRiskDistribution": "नो-शो जोखिम वितरण",
+    "totalAppointments": "कुल भेटघाटहरू",
+    "urgentAppointments": "तत्कालका भेटघाटहरू",
+    "noShowAppointments": "नो-शो भेटघाटहरू",
+    "completedAppointments": "पूरा भएका भेटघाटहरू",
+    "cancelledAppointments": "रद्द भएका भेटघाटहरू",
+    "averageWaitTime": "औसत पर्खाइ समय",
+    "patientFlow": "रोगी प्रवाह",
+    "clinicPerformance": "क्लिनिक प्रदर्शन",
+    "staffPerformance": "कर्मचारी प्रदर्शन",
+    "resourceUtilization": "स्रोत उपयोग",
+    "peakHours": "चरम घण्टाहरू",
+    "offPeakHours": "चरम-बाहिरका घण्टाहरू",
+    "busyDays": "व्यस्त दिनहरू",
+    "quietDays": "शान्त दिनहरू",
+    "monthlyStats": "मासिक तथ्याङ्क",
+    "weeklyStats": "साप्ताहिक तथ्याङ्क",
+    "dailyStats": "दैनिक तथ्याङ्क",
+    "hourlyStats": "घण्टाका तथ्याङ्क",
+    "comparison": "तुलना",
+    "previousPeriod": "अघिल्लो अवधि",
+    "currentPeriod": "हालको अवधि",
+    "growth": "वृद्धि",
+    "decline": "घटाउ",
+    "stable": "स्थिर",
+    "improvement": "सुधार",
+    "deterioration": "अवनति"
   },
 
   "clinic": {
@@ -137,7 +360,18 @@
     "patient": "रोगी",
     "dailyLoad": "दैनिक भेटघाट लोड",
     "staff": "कर्मचारी",
-    "resources": "स्रोतहरू"
+    "resources": "स्रोतहरू",
+    "clinicInfo": "क्लिनिक जानकारी",
+    "clinicName": "क्लिनिक नाम",
+    "clinicAddress": "क्लिनिक ठेगाना",
+    "clinicPhone": "क्लिनिक फोन",
+    "clinicEmail": "क्लिनिक इमेल",
+    "clinicHours": "क्लिनिक घण्टाहरू",
+    "clinicServices": "क्लिनिक सेवाहरू",
+    "clinicCapacity": "क्लिनिक क्षमता",
+    "clinicStaff": "क्लिनिक कर्मचारी",
+    "clinicEquipment": "क्लिनिक उपकरणहरू",
+    "clinicFacilities": "क्लिनिक सुविधाहरू"
   },
 
   "admin": {
@@ -146,7 +380,20 @@
     "systemLogs": "प्रणाली लगहरू",
     "manageUsers": "प्रयोगकर्ता व्यवस्थापना",
     "systemSettings": "प्रणाली सेटिङहरू",
-    "userManagement": "प्रयोगकर्ता व्यवस्थापना"
+    "userManagement": "प्रयोगकर्ता व्यवस्थापना",
+    "systemAdministration": "प्रणाली प्रशासन",
+    "userRoles": "प्रयोगकर्ता भूमिकाहरू",
+    "permissions": "अनुमतिहरू",
+    "systemMaintenance": "प्रणाली मर्मतसम्भार",
+    "backupRestore": "ब्याकअप र पुनर्स्थापना",
+    "systemMonitoring": "प्रणाली निगरानी",
+    "securitySettings": "सुरक्षा सेटिङहरू",
+    "auditLogs": "लेखापरीक्षा लगहरू",
+    "systemReports": "प्रणाली रिपोर्टहरू",
+    "configuration": "कन्फिगरेसन",
+    "databaseManagement": "डेटाबेस व्यवस्थापन",
+    "apiManagement": "API व्यवस्थापन",
+    "integrationSettings": "एकीकरण सेटिङहरू"
   },
 
   "roles": {
@@ -159,19 +406,134 @@
     "offlineFetchError": "अफलाइन मोड - डेटा ल्याउन सकिएन",
     "offlineSynced": "अफलाइन डेटा समक्रमित भयो!",
     "connectionLost": "जडान हराएको। अफलाइन काम गर्दै।",
-    "connectionRestored": "जडान पुनर्स्थापित भयो।"
+    "connectionRestored": "जडान पुनर्स्थापित भयो।",
+    "offlineMode": "अफलाइन मोड",
+    "onlineMode": "अनलाइन मोड",
+    "syncPending": "समक्रमण बाँकी",
+    "syncInProgress": "समक्रमण प्रगतिमा",
+    "syncCompleted": "समक्रमण पूरा भयो",
+    "syncFailed": "समक्रमण असफल भयो",
+    "retrySync": "समक्रमण पुन: प्रयास गर्नुहोस्",
+    "offlineData": "अफलाइन डेटा",
+    "pendingChanges": "बाँकी परिवर्तनहरू",
+    "lastSync": "अन्तिम समक्रमण",
+    "nextSync": "अर्को समक्रमण"
   },
 
   "errors": {
     "networkError": "नेटवर्क त्रुटि। कृपया जडान जाँच गर्नुहोस्।",
     "unexpectedError": "अप्रत्याशित त्रुटि भयो। कृपया पछि प्रयास गर्नुहोस्।",
     "validationError": "कृपया आफ्नो इनपुट जाँच गर्नुहोस् र पुन: प्रयास गर्नुहोस्।",
-    "permissionDenied": "तपाईंलाई यो कार्य गर्न अनुमति छैन।"
+    "permissionDenied": "तपाईंलाई यो कार्य गर्न अनुमति छैन।",
+    "serverError": "सर्भर त्रुटि। कृपया पछि प्रयास गर्नुहोस्।",
+    "timeoutError": "अनुरोध समय सकियो। कृपया पुन: प्रयास गर्नुहोस्।",
+    "notFound": "स्रोत फेला परेन।",
+    "unauthorized": "अनधिकृत पहुँच।",
+    "forbidden": "पहुँच निषेधित।",
+    "badRequest": "खराब अनुरोध। कृपया आफ्नो इनपुट जाँच गर्नुहोस्।",
+    "conflict": "स्रोत द्वन्द्व।",
+    "tooManyRequests": "धेरै अनुरोधहरू। कृपया पछि प्रयास गर्नुहोस्।",
+    "serviceUnavailable": "सेवा उपलब्ध छैन। कृपया पछि प्रयास गर्नुहोस्।",
+    "internalServerError": "आन्तरिक सर्भर त्रुटि।",
+    "databaseError": "डेटाबेस त्रुटि।",
+    "fileNotFound": "फाइल फेला परेन।",
+    "invalidFormat": "अवैध ढाँचा।",
+    "missingRequiredField": "आवश्यक फिल्ड हराएको।",
+    "invalidValue": "अवैध मान।",
+    "duplicateEntry": "डुप्लिकेट प्रविष्टि।",
+    "constraintViolation": "बाधा उल्लङ्घन।"
   },
 
   "forbidden": {
     "title": "४०३ - पहुँच अस्वीकृत",
     "noPermission": "तपाईंलाई यो पृष्ठ हेर्न अनुमति छैन।",
-    "goHome": "गृहपृष्ठमा जानुहोस्"
+    "goHome": "गृहपृष्ठमा जानुहोस्",
+    "contactAdmin": "प्रशासकसँग सम्पर्क गर्नुहोस्",
+    "requestAccess": "पहुँच अनुरोध गर्नुहोस्"
+  },
+
+  "success": {
+    "operationCompleted": "कार्य सफलतापूर्वक पूरा भयो",
+    "dataSaved": "डेटा सफलतापूर्वक सुरक्षित भयो",
+    "dataUpdated": "डेटा सफलतापूर्वक अपडेट भयो",
+    "dataDeleted": "डेटा सफलतापूर्वक मेटाइयो",
+    "dataImported": "डेटा सफलतापूर्वक आयात भयो",
+    "dataExported": "डेटा सफलतापूर्वक निर्यात भयो",
+    "emailSent": "इमेल सफलतापूर्वक पठाइयो",
+    "passwordChanged": "पासवर्ड सफलतापूर्वक परिवर्तन भयो",
+    "profileUpdated": "प्रोफाइल सफलतापूर्वक अपडेट भयो",
+    "settingsSaved": "सेटिङहरू सफलतापूर्वक सुरक्षित भयो",
+    "backupCreated": "ब्याकअप सफलतापूर्वक बनाइयो",
+    "restoreCompleted": "पुनर्स्थापना सफलतापूर्वक पूरा भयो"
+  },
+
+  "validation": {
+    "required": "यो फिल्ड आवश्यक छ",
+    "email": "कृपया वैध इमेल ठेगाना प्रविष्ट गर्नुहोस्",
+    "password": "पासवर्ड कम्तिमा ८ वर्णको हुनुपर्छ",
+    "passwordMatch": "पासवर्डहरू मेल खाँदैनन्",
+    "phone": "कृपया वैध फोन नम्बर प्रविष्ट गर्नुहोस्",
+    "date": "कृपया वैध मिति प्रविष्ट गर्नुहोस्",
+    "time": "कृपया वैध समय प्रविष्ट गर्नुहोस्",
+    "number": "कृपया वैध नम्बर प्रविष्ट गर्नुहोस्",
+    "minLength": "न्यूनतम लम्बाइ {{min}} वर्ण हो",
+    "maxLength": "अधिकतम लम्बाइ {{max}} वर्ण हो",
+    "minValue": "न्यूनतम मान {{min}} हो",
+    "maxValue": "अधिकतम मान {{max}} हो",
+    "pattern": "कृपया वैध ढाँचा प्रविष्ट गर्नुहोस्",
+    "unique": "यो मान पहिले नै अवस्थित छ",
+    "futureDate": "मिति भविष्यमा हुनुपर्छ",
+    "pastDate": "मिति भूतकालमा हुनुपर्छ",
+    "age": "उमेर {{min}} र {{max}} बीचमा हुनुपर्छ",
+    "fileSize": "फाइल साइज {{max}}MB भन्दा कम हुनुपर्छ",
+    "fileType": "अवैध फाइल प्रकार",
+    "url": "कृपया वैध URL प्रविष्ट गर्नुहोस्"
+  },
+
+  "time": {
+    "now": "अहिले",
+    "today": "आज",
+    "yesterday": "हिजो",
+    "tomorrow": "भोलि",
+    "thisWeek": "यो सप्ताह",
+    "lastWeek": "अघिल्लो सप्ताह",
+    "nextWeek": "अर्को सप्ताह",
+    "thisMonth": "यो महिना",
+    "lastMonth": "अघिल्लो महिना",
+    "nextMonth": "अर्को महिना",
+    "thisYear": "यो वर्ष",
+    "lastYear": "अघिल्लो वर्ष",
+    "nextYear": "अर्को वर्ष",
+    "morning": "बिहान",
+    "afternoon": "दिउँसो",
+    "evening": "साँझ",
+    "night": "रात",
+    "am": "पूर्वाह्न",
+    "pm": "अपराह्न"
+  },
+
+  "months": {
+    "january": "जनवरी",
+    "february": "फेब्रुअरी",
+    "march": "मार्च",
+    "april": "अप्रिल",
+    "may": "मे",
+    "june": "जुन",
+    "july": "जुलाई",
+    "august": "अगस्ट",
+    "september": "सेप्टेम्बर",
+    "october": "अक्टोबर",
+    "november": "नोभेम्बर",
+    "december": "डिसेम्बर"
+  },
+
+  "days": {
+    "monday": "सोमबार",
+    "tuesday": "मङ्गलबार",
+    "wednesday": "बुधबार",
+    "thursday": "बिहिबार",
+    "friday": "शुक्रबार",
+    "saturday": "शनिबार",
+    "sunday": "आइतबार"
   }
 }

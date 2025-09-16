@@ -6,7 +6,7 @@ import API from '../../api/axios';
 
 /**
  * Login Component
- * Handles user authentication with email and password
+ * Handles user authentication and redirects to appropriate dashboard
  */
 export default function Login() {
   const { t } = useTranslation();
@@ -38,24 +38,27 @@ export default function Login() {
         password: formData.password
       });
 
+      // Backend returns: { message: "Login successful", token: "...", user: {...}, profileComplete: boolean }
       const { token, user, profileComplete } = response.data;
       console.log('Login response:', { token, user, profileComplete }); // Debug log
       
-      // Pass the role from the user object
+      // Store authentication data
       login(token, user, user.role);
       
       // Redirect based on profile completion status
       if (!profileComplete) {
-        // Redirect to profile creation page
+        // Redirect to appropriate profile creation page based on role
         const profilePath = user.role === 'patient' ? '/profile/patient' : 
                            user.role === 'clinic_staff' ? '/profile/clinic-staff' : 
                            '/profile/admin';
         navigate(profilePath);
       } else {
+        // Redirect to unified dashboard (App.js will handle role-based routing)
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      console.error('Login error:', err);
+      setError(err.response?.data?.error || err.response?.data?.details || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -73,14 +76,14 @@ export default function Login() {
           {t('auth.loginTitle')}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Welcome to Healthcare AI System
+          {t('auth.loginSubtitle')}
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
               {error}
             </div>
           )}
@@ -88,36 +91,40 @@ export default function Login() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                {t('auth.emailLabel')}
+                {t('auth.email')}
               </label>
               <div className="mt-1">
                 <input
                   id="email"
                   name="email"
                   type="email"
+                  autoComplete="email"
                   required
                   value={formData.email}
                   onChange={handleChange}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="user@example.com"
+                  placeholder="you@example.com"
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                {t('auth.passwordLabel')}
+                {t('auth.password')}
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                placeholder="••••••••"
-              />
+              <div className="mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
 
             <div>
@@ -146,7 +153,7 @@ export default function Login() {
                 to="/register"
                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
-                {t('common.register')}
+                {t('auth.registerButton')}
               </Link>
             </div>
           </div>

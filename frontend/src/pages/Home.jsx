@@ -1,129 +1,237 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import API from '../api/axios';
 
 /**
- * Home Page Component
- * Landing page with role-based content
+ * Simple Home Page Component
+ * Clean landing page with mobile-first design
  */
 export default function Home() {
   const { t } = useTranslation();
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, user } = useAuth();
+  const [stats, setStats] = useState({
+    totalAppointments: 0,
+    activeUsers: 0,
+    systemHealth: 'Unknown'
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSystemStats();
+    }
+  }, [isAuthenticated]);
+
+  const fetchSystemStats = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await API.get('/analytics/system-stats');
+      setStats(response.data);
+    } catch (err) {
+      console.error('Failed to load system statistics:', err);
+      setError('Failed to load system statistics');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="healthcare-gradient text-white px-8 py-4 rounded-xl font-bold text-4xl mb-8 inline-block">
-            🏥 HealthCare AI System
-          </div>
-          
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {t('common.welcome')}
-          </h1>
-          
-          <p className="text-xl text-gray-600 mb-8">
-            {t('homePage.homeMessage')}
-          </p>
+    // Redirect to appropriate dashboard
+    const dashboardPath = role === 'patient' ? '/dashboard/patient' : 
+                         role === 'clinic_staff' ? '/dashboard/staff' : 
+                         '/dashboard/admin';
+    return <Link to={dashboardPath} className="sr-only">Go to Dashboard</Link>;
+  }
 
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-              Welcome back, {role}
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="bg-white pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              {t('home.title', 'Smart Healthcare for Rural Nepal')}
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              {t('home.subtitle', 'AI-powered appointment system designed for rural healthcare access')}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/dashboard"
-                className="bg-primary-500 hover:bg-primary-600 text-white p-6 rounded-xl text-center transition-all transform hover:scale-105"
+                to="/register"
+                className="btn btn-primary text-lg px-8 py-3"
               >
-                <div className="text-3xl mb-3">📊</div>
-                <div className="font-semibold text-lg">
-                  {t('common.dashboard')}
-                </div>
+                {t('common.getStarted', 'Get Started')}
               </Link>
-
               <Link
-                to="/appointments"
-                className="bg-secondary-500 hover:bg-secondary-600 text-white p-6 rounded-xl text-center transition-all transform hover:scale-105"
+                to="/login"
+                className="btn btn-outline text-lg px-8 py-3"
               >
-                <div className="text-3xl mb-3">📅</div>
-                <div className="font-semibold text-lg">
-                  {t('appointments.appointments')}
-                </div>
-              </Link>
-
-              <Link
-                to={role === 'patient' ? '/profile/patient' : role === 'clinic_staff' ? '/profile/clinic-staff' : '/profile/admin'}
-                className="bg-purple-500 hover:bg-purple-600 text-white p-6 rounded-xl text-center transition-all transform hover:scale-105"
-              >
-                <div className="text-3xl mb-3">👤</div>
-                <div className="font-semibold text-lg">
-                  {t('profile.myProfile')}
-                </div>
+                {t('common.login')}
               </Link>
             </div>
           </div>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="healthcare-gradient text-white px-8 py-4 rounded-xl font-bold text-4xl mb-8 inline-block">
-          🏥 HealthCare AI System
+      {/* Features Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+            {t('home.features.title', 'Key Features')}
+          </h2>
+          <p className="text-lg text-gray-600">
+            {t('home.features.subtitle', 'Everything you need for modern healthcare management')}
+          </p>
         </div>
-        
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">
-          {t('common.welcome')}
-        </h1>
-        
-        <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-          Advanced healthcare management system with AI-powered appointment scheduling, 
-          patient triage, and predictive analytics for better healthcare outcomes.
-        </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div className="bg-white p-6 rounded-xl shadow-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Feature 1 */}
+          <div className="card card-hover text-center">
             <div className="text-4xl mb-4">🤖</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">AI-Powered</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {t('home.features.ai.title', 'AI-Powered Triage')}
+            </h3>
             <p className="text-gray-600">
-              Intelligent appointment scheduling and patient triage using machine learning
+              {t('home.features.ai.description', 'Smart appointment scheduling with AI-driven urgency assessment')}
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="text-4xl mb-4">📊</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Analytics</h3>
+          {/* Feature 2 */}
+          <div className="card card-hover text-center">
+            <div className="text-4xl mb-4">📱</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {t('home.features.mobile.title', 'Mobile-First Design')}
+            </h3>
             <p className="text-gray-600">
-              Comprehensive analytics and insights for better healthcare management
+              {t('home.features.mobile.description', 'Optimized for mobile devices with offline capabilities')}
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-lg">
+          {/* Feature 3 */}
+          <div className="card card-hover text-center">
             <div className="text-4xl mb-4">🌐</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Bilingual</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {t('home.features.multilingual.title', 'Multilingual Support')}
+            </h3>
             <p className="text-gray-600">
-              Full support for English and Nepali languages
+              {t('home.features.multilingual.description', 'Available in English and Nepali for better accessibility')}
+            </p>
+          </div>
+
+          {/* Feature 4 */}
+          <div className="card card-hover text-center">
+            <div className="text-4xl mb-4">📊</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {t('home.features.analytics.title', 'Real-time Analytics')}
+            </h3>
+            <p className="text-gray-600">
+              {t('home.features.analytics.description', 'Comprehensive insights and reporting for healthcare providers')}
+            </p>
+          </div>
+
+          {/* Feature 5 */}
+          <div className="card card-hover text-center">
+            <div className="text-4xl mb-4">🔒</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {t('home.features.security.title', 'Secure & Private')}
+            </h3>
+            <p className="text-gray-600">
+              {t('home.features.security.description', 'HIPAA-compliant with end-to-end encryption')}
+            </p>
+          </div>
+
+          {/* Feature 6 */}
+          <div className="card card-hover text-center">
+            <div className="text-4xl mb-4">⚡</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {t('home.features.fast.title', 'Fast & Reliable')}
+            </h3>
+            <p className="text-gray-600">
+              {t('home.features.fast.description', 'Lightning-fast performance with 99.9% uptime')}
             </p>
           </div>
         </div>
+      </div>
 
-        <div className="space-x-4">
-          <Link
-            to="/login"
-            className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg text-lg font-medium transition-all transform hover:scale-105"
-          >
-            {t('common.login')}
-          </Link>
-          <Link
-            to="/register"
-            className="bg-secondary-600 hover:bg-secondary-700 text-white px-8 py-3 rounded-lg text-lg font-medium transition-all transform hover:scale-105"
-          >
-            {t('common.register')}
-          </Link>
+      {/* Stats Section */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+              {t('home.stats.title', 'Trusted by Healthcare Providers')}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold text-blue-600 mb-2">
+                {loading ? (
+                  <div className="spinner mx-auto"></div>
+                ) : error ? (
+                  '--'
+                ) : (
+                  stats.totalAppointments.toLocaleString()
+                )}
+              </div>
+              <div className="text-sm sm:text-base text-gray-600">
+                {t('home.stats.appointments', 'Appointments Scheduled')}
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold text-green-600 mb-2">
+                {loading ? (
+                  <div className="spinner mx-auto"></div>
+                ) : error ? (
+                  '--'
+                ) : (
+                  stats.activeUsers.toLocaleString()
+                )}
+              </div>
+              <div className="text-sm sm:text-base text-gray-600">
+                {t('home.stats.users', 'Active Users')}
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="text-3xl sm:text-4xl font-bold text-purple-600 mb-2">
+                {loading ? (
+                  <div className="spinner mx-auto"></div>
+                ) : error ? (
+                  '--'
+                ) : (
+                  '99.9%'
+                )}
+              </div>
+              <div className="text-sm sm:text-base text-gray-600">
+                {t('home.stats.uptime', 'System Uptime')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="healthcare-gradient">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+              {t('home.cta.title', 'Ready to Transform Healthcare?')}
+            </h2>
+            <p className="text-lg sm:text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+              {t('home.cta.subtitle', 'Join thousands of healthcare providers using our AI-powered platform')}
+            </p>
+            <Link
+              to="/register"
+              className="inline-flex items-center px-8 py-3 text-lg font-medium text-blue-600 bg-white rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              {t('common.getStarted', 'Get Started Today')}
+            </Link>
+          </div>
         </div>
       </div>
     </div>

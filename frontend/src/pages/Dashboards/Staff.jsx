@@ -1,51 +1,115 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 
 /**
- * Staff Dashboard Component
- * Shows urgent cases and alerts preview
+ * Enhanced Staff Dashboard Component
+ * Shows comprehensive staff information and clinic management
  */
 export default function StaffDashboard() {
   const { t } = useTranslation();
-  const [urgentCases, setUrgentCases] = useState([]);
-  const [alerts, setAlerts] = useState([]);
-  const [todayAppointments, setTodayAppointments] = useState([]);
+  const { user } = useAuth();
+  const [dashboardData, setDashboardData] = useState({
+    urgentCases: [],
+    alerts: [],
+    todayAppointments: [],
+    systemStats: {
+      totalAppointments: 0,
+      completedToday: 0,
+      pendingToday: 0,
+      urgentCases: 0
+    },
+    recentActivity: []
+  });
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
   const fetchDashboardData = async () => {
+    setError(null);
     try {
-      const [urgentRes, alertsRes, appointmentsRes] = await Promise.all([
-        API.get('/analytics/urgent-cases'),
-        API.get('/analytics/alerts'),
-        API.get('/appointments/today')
+      const [urgentRes, alertsRes, appointmentsRes, statsRes] = await Promise.all([
+        API.get('/analytics/urgent-cases').catch(() => ({ data: [] })),
+        API.get('/analytics/alerts').catch(() => ({ data: [] })),
+        API.get('/appointments/today').catch(() => ({ data: [] })),
+        API.get('/analytics/system-stats').catch(() => ({ data: {} }))
       ]);
       
-      setUrgentCases(urgentRes.data);
-      setAlerts(alertsRes.data);
-      setTodayAppointments(appointmentsRes.data);
+      const urgentCases = urgentRes.data || [];
+      const alerts = alertsRes.data || [];
+      const todayAppointments = appointmentsRes.data || [];
+      const systemStats = statsRes.data || {};
+      
+      // Calculate today's statistics
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      
+      const completedToday = todayAppointments.filter(apt => apt.status === 'completed').length;
+      const pendingToday = todayAppointments.filter(apt => 
+        apt.status === 'scheduled' || apt.status === 'confirmed'
+      ).length;
+      
+      setDashboardData({
+        urgentCases,
+        alerts,
+        todayAppointments,
+        systemStats: {
+          totalAppointments: systemStats.totalAppointments || 0,
+          completedToday,
+          pendingToday,
+          urgentCases: urgentCases.length,
+          activeUsers: systemStats.activeUsers || 0
+        },
+        recentActivity: todayAppointments.slice(0, 5)
+      });
+      
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      // Set mock data for development
-      setUrgentCases([
-        { id: 1, patient: 'John Doe', urgency: 'high', reason: 'Chest pain' },
-        { id: 2, patient: 'Jane Smith', urgency: 'medium', reason: 'Fever' }
-      ]);
-      setAlerts([
-        { id: 1, type: 'warning', message: 'High patient volume today' },
-        { id: 2, type: 'info', message: 'System maintenance scheduled' }
-      ]);
-      setTodayAppointments([
-        { id: 1, patient: 'Alice Johnson', time: '9:00 AM', doctor: 'Dr. Smith' },
-        { id: 2, patient: 'Bob Wilson', time: '10:30 AM', doctor: 'Dr. Brown' }
-      ]);
+      setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchDashboardData();
+    setRefreshing(false);
+  };
+
+  const getUrgencyColor = (urgency) => {
+    switch (urgency) {
+      case 'urgent': return 'bg-red-100 text-red-800';
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'routine': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'scheduled': return 'bg-blue-100 text-blue-800';
+      case 'confirmed': return 'bg-purple-100 text-purple-800';
+      case 'in_progress': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getAlertColor = (severity) => {
+    switch (severity) {
+      case 'high': return 'bg-red-50 border-red-200';
+      case 'medium': return 'bg-yellow-50 border-yellow-200';
+      case 'low': return 'bg-blue-50 border-blue-200';
+      default: return 'bg-gray-50 border-gray-200';
     }
   };
 
@@ -59,94 +123,347 @@ export default function StaffDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            {t('dashboard.staff.title')}
-          </h1>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Urgent Cases */}
-            <div className="bg-red-50 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-red-900 mb-4">
-                {t('dashboard.staff.urgentCases')}
-              </h2>
-              
-              <div className="space-y-3">
-                {urgentCases.map((case_) => (
-                  <div key={case_.id} className="bg-white rounded-lg p-3 border border-red-200">
-                    <p className="font-medium text-gray-900">{case_.patient}</p>
-                    <p className="text-sm text-gray-600">{case_.reason}</p>
-                    <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                      case_.urgency === 'high' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {case_.urgency}
-                    </span>
-                  </div>
-                ))}
-              </div>
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Staff Dashboard
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Welcome back, {user?.name || 'Staff'}!
+              </p>
             </div>
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
+        </div>
+      </div>
 
-            {/* Alerts Preview */}
-            <div className="bg-yellow-50 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-yellow-900 mb-4">
-                {t('dashboard.staff.alertsPreview')}
-              </h2>
-              
-              <div className="space-y-3">
-                {alerts.map((alert) => (
-                  <div key={alert.id} className="bg-white rounded-lg p-3 border border-yellow-200">
-                    <p className="text-sm text-gray-900">{alert.message}</p>
-                    <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                      alert.type === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {alert.type}
-                    </span>
-                  </div>
-                ))}
-              </div>
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <span className="text-red-400">⚠️</span>
             </div>
-
-            {/* Today's Appointments */}
-            <div className="bg-blue-50 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-blue-900 mb-4">
-                {t('dashboard.staff.todayAppointments')}
-              </h2>
-              
-              <div className="space-y-3">
-                {todayAppointments.map((appointment) => (
-                  <div key={appointment.id} className="bg-white rounded-lg p-3 border border-blue-200">
-                    <p className="font-medium text-gray-900">{appointment.patient}</p>
-                    <p className="text-sm text-gray-600">{appointment.time}</p>
-                    <p className="text-sm text-gray-600">{appointment.doctor}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="ml-3">
+              <p className="text-sm text-red-800">{error}</p>
+              <button
+                onClick={fetchDashboardData}
+                className="mt-2 text-sm text-red-600 hover:text-red-500 underline"
+              >
+                Try again
+              </button>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Quick Links */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* System Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <span className="text-blue-600 text-xl">📅</span>
+              </div>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Today's Appointments</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {dashboardData.todayAppointments.length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                <span className="text-green-600 text-xl">✅</span>
+              </div>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Completed Today</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {dashboardData.systemStats.completedToday}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <span className="text-red-600 text-xl">🚨</span>
+              </div>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Urgent Cases</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {dashboardData.systemStats.urgentCases}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                <span className="text-purple-600 text-xl">👨‍⚕️</span>
+              </div>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Active Users</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {dashboardData.systemStats.activeUsers}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Urgent Cases */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Urgent Cases
+            </h2>
+          </div>
+          <div className="p-6">
+            {dashboardData.urgentCases.length > 0 ? (
+              <div className="space-y-4">
+                {dashboardData.urgentCases.map((case_) => (
+                  <div key={case_.id} className="p-4 bg-red-50 rounded-lg border border-red-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="font-medium text-gray-900">{case_.patient}</p>
+                      <span className="text-sm text-gray-500">{case_.time}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{case_.reason}</p>
+                    <div className="flex items-center justify-between">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getUrgencyColor(case_.urgency)}`}>
+                        {case_.urgency}
+                      </span>
+                      {case_.phone && (
+                        <a href={`tel:${case_.phone}`} className="text-blue-600 hover:text-blue-700 text-sm">
+                          Call
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">✅</div>
+                <p className="text-gray-500">No urgent cases</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Alerts */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">
+              System Alerts
+            </h2>
+          </div>
+          <div className="p-6">
+            {dashboardData.alerts.length > 0 ? (
+              <div className="space-y-4">
+                {dashboardData.alerts.map((alert) => (
+                  <div key={alert.id} className={`p-4 rounded-lg border ${getAlertColor(alert.severity)}`}>
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                          alert.severity === 'high' ? 'bg-red-100' :
+                          alert.severity === 'medium' ? 'bg-yellow-100' :
+                          'bg-blue-100'
+                        }`}>
+                          <span className={`text-sm ${
+                            alert.severity === 'high' ? 'text-red-600' :
+                            alert.severity === 'medium' ? 'text-yellow-600' :
+                            'text-blue-600'
+                          }`}>
+                            {alert.severity === 'high' ? '🚨' : alert.severity === 'medium' ? '⚠️' : 'ℹ️'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-gray-900">{alert.message}</p>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-2 ${
+                          alert.severity === 'high' ? 'bg-red-100 text-red-800' :
+                          alert.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}>
+                          {alert.type}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">✅</div>
+                <p className="text-gray-500">No alerts</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Today's Appointments */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Today's Appointments
+            </h2>
+          </div>
+          <div className="p-6">
+            {dashboardData.todayAppointments.length > 0 ? (
+              <div className="space-y-4">
+                {dashboardData.todayAppointments.slice(0, 5).map((appointment) => (
+                  <div key={appointment.id} className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="font-medium text-gray-900">{appointment.patient_name}</p>
+                      <span className="text-sm text-gray-500">{appointment.time}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{appointment.staff_name}</p>
+                    <div className="flex items-center justify-between">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(appointment.status)}`}>
+                        {appointment.status}
+                      </span>
+                      {appointment.urgency && (
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getUrgencyColor(appointment.urgency)}`}>
+                          {appointment.urgency}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-4">📅</div>
+                <p className="text-gray-500">No appointments today</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Link
               to="/appointments"
-              className="bg-primary-600 hover:bg-primary-700 text-white text-center py-3 px-4 rounded-md transition-colors"
+              className="flex items-center justify-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
             >
-              {t('appointments.allAppointments')}
+              <div className="text-center">
+                <div className="text-2xl mb-2">📅</div>
+                <div className="font-medium text-blue-900">All Appointments</div>
+              </div>
             </Link>
             
             <Link
               to="/analytics"
-              className="bg-secondary-600 hover:bg-secondary-700 text-white text-center py-3 px-4 rounded-md transition-colors"
+              className="flex items-center justify-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
             >
-              {t('analytics.trends')}
+              <div className="text-center">
+                <div className="text-2xl mb-2">📊</div>
+                <div className="font-medium text-green-900">Analytics</div>
+              </div>
+            </Link>
+            
+            <Link
+              to="/appointments/sync"
+              className="flex items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+            >
+              <div className="text-center">
+                <div className="text-2xl mb-2">🔄</div>
+                <div className="font-medium text-purple-900">Sync Data</div>
+              </div>
             </Link>
             
             <Link
               to="/profile/clinic-staff"
-              className="bg-purple-600 hover:bg-purple-700 text-white text-center py-3 px-4 rounded-md transition-colors"
+              className="flex items-center justify-center p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
             >
-              {t('profile.myProfile')}
+              <div className="text-center">
+                <div className="text-2xl mb-2">👤</div>
+                <div className="font-medium text-indigo-900">My Profile</div>
+              </div>
             </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+            <Link
+              to="/analytics"
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              View All →
+            </Link>
+          </div>
+        </div>
+        <div className="p-6">
+          <div className="space-y-4">
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-green-600">✅</span>
+                </div>
+              </div>
+              <div className="ml-4 flex-1">
+                <p className="text-sm font-medium text-gray-900">Appointment completed</p>
+                <p className="text-sm text-gray-500">Patient: John Doe - 2 hours ago</p>
+              </div>
+            </div>
+
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <span className="text-red-600">🚨</span>
+                </div>
+              </div>
+              <div className="ml-4 flex-1">
+                <p className="text-sm font-medium text-gray-900">Urgent case identified</p>
+                <p className="text-sm text-gray-500">Patient: Jane Smith - 3 hours ago</p>
+              </div>
+            </div>
+
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600">📊</span>
+                </div>
+              </div>
+              <div className="ml-4 flex-1">
+                <p className="text-sm font-medium text-gray-900">Analytics report generated</p>
+                <p className="text-sm text-gray-500">Daily summary - 4 hours ago</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
