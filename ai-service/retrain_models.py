@@ -153,34 +153,3 @@ def retrain_noshow_model(noshow_data):
     print("✅ No-show model retrained and saved")
     
     return model
-
-def main():
-    """Main retraining function"""
-    print("🚀 Starting adaptive learning and model retraining...")
-    print("=" * 50)
-    
-    # Connect to MongoDB
-    logs_collection = connect_to_mongodb()
-    if logs_collection is None:
-        print("❌ Cannot proceed without MongoDB connection")
-        return
-    
-    # Extract features from logs
-    triage_data, noshow_data = extract_features_from_logs(logs_collection)
-    
-    # Retrain models
-    triage_model = retrain_triage_model(triage_data)
-    noshow_model = retrain_noshow_model(noshow_data)
-    
-    print("=" * 50)
-    if triage_model and noshow_model:
-        print("🎉 Adaptive learning completed successfully!")
-        print("📈 Both models have been updated with new data")
-    else:
-        print("⚠️  Adaptive learning completed with some limitations")
-        print("📊 Some models may not have been updated due to insufficient data")
-    
-    print(f"🕒 Retraining completed at: {datetime.now()}")
-
-if __name__ == "__main__":
-    main()

@@ -2,6 +2,5 @@ flask
 scikit-learn
 pandas
 numpy
-pymongo
-python-dotenv
-googletrans
+joblib
+requests
