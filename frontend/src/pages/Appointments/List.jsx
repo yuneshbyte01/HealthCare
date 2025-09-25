@@ -15,6 +15,10 @@ export default function AppointmentList() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [message, setMessage] = useState('');
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [newDate, setNewDate] = useState('');
+  const [rescheduleLoading, setRescheduleLoading] = useState(false);
 
   const fetchAppointments = useCallback(async () => {
     try {
@@ -54,15 +58,40 @@ export default function AppointmentList() {
     }
   };
 
-  const handleRescheduleAppointment = async (appointmentId, newDate) => {
+  const handleRescheduleAppointment = async () => {
+    if (!newDate) {
+      setMessage(t('appointments.dateRequired', 'Please select a new date and time'));
+      return;
+    }
+
+    setRescheduleLoading(true);
     try {
-      await API.put(`/appointments/${appointmentId}`, { date: newDate });
-      setMessage(t('appointments.appointmentRescheduled'));
+      await API.put(`/appointments/${selectedAppointment.id}`, { 
+        date: newDate
+      });
+      setMessage(t('appointments.appointmentRescheduled', 'Appointment rescheduled successfully'));
+      setShowRescheduleModal(false);
+      setSelectedAppointment(null);
+      setNewDate('');
       fetchAppointments(); // Refresh the list
     } catch (error) {
       console.error('Error rescheduling appointment:', error);
       setMessage(t('errors.unexpectedError'));
+    } finally {
+      setRescheduleLoading(false);
     }
+  };
+
+  const openRescheduleModal = (appointment) => {
+    setSelectedAppointment(appointment);
+    // Set current appointment date as default
+    if (appointment?.date) {
+      const currentDate = new Date(appointment.date);
+      // Format for datetime-local input (YYYY-MM-DDTHH:MM)
+      const formattedDate = currentDate.toISOString().slice(0, 16);
+      setNewDate(formattedDate);
+    }
+    setShowRescheduleModal(true);
   };
 
   const getStatusColor = (status) => {
@@ -177,6 +206,13 @@ export default function AppointmentList() {
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getUrgencyColor(appointment.urgency)}`}>
                             {getUrgencyText(appointment.urgency)}
                           </span>
+                          {/* Show rescheduled indicator if appointment was updated after creation */}
+                          {appointment.last_updated && appointment.created_at && 
+                           new Date(appointment.last_updated) > new Date(appointment.created_at) && (
+                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                              {t('appointments.rescheduled', 'Rescheduled')}
+                            </span>
+                          )}
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
@@ -223,15 +259,10 @@ export default function AppointmentList() {
                         </Link>
 
                         {/* Role-specific actions */}
-                        {role === 'patient' && appointment.status === 'scheduled' && (
+                        {role === 'patient' && (appointment.status === 'scheduled' || appointment.status === 'rescheduled') && (
                           <>
                             <button
-                              onClick={() => {
-                                const newDate = prompt(t('appointments.enterNewDate', 'Enter new date and time (YYYY-MM-DDTHH:MM):'));
-                                if (newDate) {
-                                  handleRescheduleAppointment(appointment.id, newDate);
-                                }
-                              }}
+                              onClick={() => openRescheduleModal(appointment)}
                               className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-all"
                             >
                               {t('appointments.reschedule')}
@@ -272,6 +303,78 @@ export default function AppointmentList() {
           </div>
         </div>
       </div>
+
+      {/* Reschedule Modal */}
+      {showRescheduleModal && selectedAppointment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {t('appointments.rescheduleAppointment', 'Reschedule Appointment')}
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                {t('appointments.appointment')} #{selectedAppointment.id}
+              </p>
+            </div>
+            
+            <div className="px-6 py-4">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('appointments.currentDate', 'Current Date & Time')}
+                </label>
+                <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
+                  {new Date(selectedAppointment.date).toLocaleString()}
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="newDate" className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('appointments.newDate', 'New Date & Time')} *
+                </label>
+                <input
+                  type="datetime-local"
+                  id="newDate"
+                  value={newDate}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  min={new Date().toISOString().slice(0, 16)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {t('appointments.selectFutureDate', 'Please select a future date and time')}
+                </p>
+              </div>
+            </div>
+            
+            <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowRescheduleModal(false);
+                  setSelectedAppointment(null);
+                  setNewDate('');
+                }}
+                disabled={rescheduleLoading}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                {t('common.cancel', 'Cancel')}
+              </button>
+              <button
+                onClick={handleRescheduleAppointment}
+                disabled={rescheduleLoading || !newDate}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 flex items-center"
+              >
+                {rescheduleLoading && (
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                {t('appointments.reschedule', 'Reschedule')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

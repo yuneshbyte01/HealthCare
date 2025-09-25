@@ -140,36 +140,110 @@ class ImprovedSymptomAnalyzer:
         return 'routine'
     
     def detect_language(self, text):
-        """Simple language detection based on character patterns"""
+        """Enhanced language detection for English and Nepali"""
+        if not text or not text.strip():
+            return 'en'
+        
+        # Count Nepali Devanagari characters
         nepali_chars = sum(1 for char in text if '\u0900' <= char <= '\u097F')
+        
+        # Count total alphabetic characters
         total_chars = len([c for c in text if c.isalpha()])
         
         if total_chars == 0:
             return 'en'
         
+        # Calculate Nepali character ratio
         nepali_ratio = nepali_chars / total_chars
-        return 'ne' if nepali_ratio > 0.3 else 'en'
+        
+        # Check for common Nepali words/phrases
+        nepali_indicators = [
+            'छ', 'छु', 'छौ', 'छन्', 'छिन्', 'छे', 'छै', 'छौं', 'छन्',
+            'मलाई', 'म', 'तपाईं', 'हामी', 'उनी', 'यो', 'त्यो', 'यहाँ', 'त्यहाँ',
+            'दुख्छ', 'दुखाइ', 'गाह्रो', 'सजिलो', 'राम्रो', 'नराम्रो'
+        ]
+        
+        text_lower = text.lower()
+        nepali_word_count = sum(1 for word in nepali_indicators if word in text_lower)
+        
+        # If we have Nepali characters or Nepali words, it's likely Nepali
+        if nepali_ratio > 0.2 or nepali_word_count > 0:
+            return 'ne'
+        
+        return 'en'
     
     def translate_nepali_to_english(self, text):
-        """Simple Nepali to English translation for common medical terms"""
+        """Enhanced Nepali to English translation for medical terms"""
         translations = {
+            # Pain and symptoms
             'छाती दुख्छ': 'chest pain',
+            'छाती दुखाइ': 'chest pain',
             'सास फेर्न गाह्रो': 'difficulty breathing',
+            'सास फेर्न गाह्रो छ': 'difficulty breathing',
             'ज्वरो': 'fever',
+            'ताप': 'fever',
             'टाउको दुखाइ': 'headache',
+            'टाउको दुख्छ': 'headache',
             'पेट दुखाइ': 'stomach pain',
+            'पेट दुख्छ': 'stomach pain',
             'ढाड दुखाइ': 'back pain',
+            'ढाड दुख्छ': 'back pain',
             'वमन': 'vomiting',
+            'उल्टी': 'vomiting',
             'चक्कर': 'dizziness',
+            'चक्कर आउँछ': 'dizziness',
             'थकान': 'fatigue',
+            'थकाइ': 'fatigue',
             'कमजोरी': 'weakness',
             'गंभीर': 'severe',
             'हल्का': 'mild',
+            'सानो': 'minor',
             'रक्तस्राव': 'bleeding',
+            'रगत': 'bleeding',
             'बेहोस': 'unconscious',
             'खोकी': 'cough',
             'नियमित': 'routine',
-            'जाँच': 'checkup'
+            'जाँच': 'checkup',
+            'परामर्श': 'consultation',
+            
+            # Body parts
+            'छाती': 'chest',
+            'टाउको': 'head',
+            'पेट': 'stomach',
+            'ढाड': 'back',
+            'हात': 'hand',
+            'खुट्टा': 'leg',
+            'आँखा': 'eye',
+            'कान': 'ear',
+            'नाक': 'nose',
+            'मुख': 'mouth',
+            
+            # Medical conditions
+            'हृदय': 'heart',
+            'हृदयघात': 'heart attack',
+            'मधुमेह': 'diabetes',
+            'रक्तचाप': 'blood pressure',
+            'अस्थमा': 'asthma',
+            'अल्सर': 'ulcer',
+            'क्यान्सर': 'cancer',
+            'संक्रमण': 'infection',
+            'एलर्जी': 'allergy',
+            
+            # Severity and urgency
+            'आपत्कालीन': 'emergency',
+            'तत्काल': 'immediate',
+            'धेरै': 'very',
+            'अलि': 'little',
+            'कम': 'less',
+            'बढी': 'more',
+            
+            # Time references
+            'आज': 'today',
+            'हिजो': 'yesterday',
+            'भोलि': 'tomorrow',
+            'हाल': 'recently',
+            'लामो समय': 'long time',
+            'छोटो समय': 'short time'
         }
         
         translated = text
@@ -446,7 +520,8 @@ def health_check():
         "features": [
             "Enhanced ML models with 68.5% triage accuracy",
             "Enhanced no-show prediction with 77.25% accuracy",
-            "Multilingual support (English/Nepali)",
+            "English and Nepali language support",
+            "Comprehensive medical term translation",
             "Confidence scoring",
             "Backward compatibility"
         ]
@@ -466,7 +541,8 @@ if __name__ == "__main__":
     print("=" * 60)
     print("Features:")
     print("✅ Enhanced ML models with improved accuracy")
-    print("✅ Multilingual support (English/Nepali)")
+    print("✅ English and Nepali language support")
+    print("✅ Comprehensive medical term translation")
     print("✅ Confidence scoring for predictions")
     print("✅ Backward compatibility with existing code")
     print("✅ Robust error handling and fallbacks")

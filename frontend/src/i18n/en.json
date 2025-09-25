@@ -60,7 +60,9 @@
     "about": "About",
     "contact": "Contact",
     "settings": "Settings",
-    "language": "Language"
+    "language": "Language",
+    "all": "All",
+    "unknown": "Unknown" 
   },
 
   "home": {
@@ -147,6 +149,18 @@
     },
     "staff": {
       "title": "Staff Dashboard",
+      "myAppointmentsToday": "My Appointments Today",
+      "myCompletedToday": "My Completed Today",
+      "urgentCases": "Urgent Cases",
+      "completionRate": "Completion Rate",
+      "myNextAppointment": "My Next Appointment",
+      "systemAlerts": "System Alerts",
+      "quickActions": "Quick Actions",
+      "recentActivity": "Recent Activity",
+      "noUpcomingAppointments": "No upcoming appointments",
+      "noUrgentCases": "No urgent cases",
+      "noAlerts": "No alerts",
+      "noRecentActivity": "No recent activity",
       "urgentCases": "Urgent Cases",
       "alertsPreview": "Alerts Preview",
       "todayAppointments": "Today's Appointments",
@@ -164,7 +178,28 @@
       "totalUsers": "Total Users",
       "totalAppointments": "Total Appointments",
       "systemUptime": "System Uptime",
-      "aiModelStatus": "AI Model Status"
+      "aiModelStatus": "AI Model Status",
+      "systemHealth": "System Health",
+      "activeUsers": "Active Users",
+      "activeClinics": "Active Clinics",
+      "staffMembers": "Staff Members",
+      "overallStatus": "Overall Status",
+      "triageModel": "Triage Model",
+      "noShowModel": "No-Show Model",
+      "accuracy": "Accuracy",
+      "lastTrained": "Last Trained",
+      "systemAlerts": "System Alerts",
+      "quickActions": "Quick Actions",
+      "recentActivity": "Recent Activity",
+      "noAlerts": "No alerts",
+      "noRecentActivity": "No recent activity",
+      "systemQuiet": "System is running quietly",
+      "clinicStaff": "Clinic Staff",
+      "moreStaff": "more staff members",
+      "noStaff": "No clinic staff",
+      "addStaffFirst": "Add clinic staff to get started",
+      "uptime": "Uptime",
+      "responseTime": "Response Time"
     }
   },
 
@@ -243,7 +278,15 @@
     "enterNewDate": "Enter new date and time (YYYY-MM-DDTHH:MM):",
     "noAppointmentsYet": "You have no appointments yet.",
     "noFilteredAppointments": "No {{status}} appointments found.",
-    "actions": "Actions"
+    "actions": "Actions",
+    "routine": "Routine",
+    "moderate": "Moderate",
+    "rescheduled": "Rescheduled",
+    "rescheduleAppointment": "Reschedule Appointment",
+    "currentDate": "Current Date & Time",
+    "newDate": "New Date & Time",
+    "selectFutureDate": "Please select a future date and time",
+    "rescheduleStatus": "Reschedule Status"
   },
 
   "profile": {
@@ -263,6 +306,14 @@
     "department": "Department",
     "workSchedule": "Work Schedule",
     "permissions": "Permissions",
+    "specialization": "Specialization",
+    "licenseNumber": "License Number",
+    "experienceYears": "Experience (Years)",
+    "clinicId": "Clinic ID",
+    "specializationPlaceholder": "e.g., Cardiology, Emergency Medicine, General Practice",
+    "licenseNumberPlaceholder": "Medical license number",
+    "experienceYearsPlaceholder": "Years of experience",
+    "clinicIdPlaceholder": "Clinic ID (usually 1)",
     "saveProfile": "Save Profile",
     "updateProfile": "Update Profile",
     "profileCreated": "Profile created successfully",

@@ -168,8 +168,8 @@ export default function PatientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {t('dashboard.patient.title')}
-              </h1>
+            {t('dashboard.patient.title')}
+          </h1>
               <p className="text-gray-600 mt-1">
                 {t('common.greeting', { name: user?.name || t('roles.patient') })}
               </p>
@@ -281,7 +281,7 @@ export default function PatientDashboard() {
             </div>
           </div>
         </div>
-      </div>
+            </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Next Appointment */}
@@ -289,7 +289,7 @@ export default function PatientDashboard() {
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
               {t('dashboard.patient.nextAppointment')}
-            </h2>
+              </h2>
           </div>
           <div className="p-6">
             {dashboardData.nextAppointment ? (
@@ -418,30 +418,30 @@ export default function PatientDashboard() {
                 <div className="text-2xl mb-2">📅</div>
                 <div className="font-medium text-blue-900">{t('appointments.bookAppointment')}</div>
               </div>
-            </Link>
-            
-            <Link
-              to="/appointments"
+                </Link>
+                
+                <Link
+                  to="/appointments"
               className="flex items-center justify-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
-            >
+                >
               <div className="text-center">
                 <div className="text-2xl mb-2">📅</div>
                 <div className="font-medium text-green-900">{t('appointments.myAppointments')}</div>
               </div>
-            </Link>
-            
-            <Link
-              to="/profile/patient"
+                </Link>
+                
+                <Link
+                  to="/profile/patient"
               className="flex items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
-            >
+                >
               <div className="text-center">
                 <div className="text-2xl mb-2">👤</div>
                 <div className="font-medium text-purple-900">{t('profile.myProfile')}</div>
               </div>
-            </Link>
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
       {/* Recent Appointments */}
       <div className="bg-white shadow rounded-lg">
@@ -483,7 +483,7 @@ export default function PatientDashboard() {
                     {appointment.urgency && (
                       <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-1 ${getUrgencyColor(appointment.urgency)}`}>
                         {getUrgencyText(appointment.urgency)}
-                      </span>
+                    </span>
                     )}
                   </div>
                 </div>
@@ -494,7 +494,7 @@ export default function PatientDashboard() {
               <div className="text-4xl mb-4">📅</div>
               <p className="text-gray-500">{t('appointments.noAppointments')}</p>
               <p className="text-sm text-gray-400 mt-1">{t('dashboard.patient.bookNewAppointment')}</p>
-            </div>
+          </div>
           )}
         </div>
       </div>

@@ -145,30 +145,78 @@ router.post(
         console.log("High no-show risk detected:", noShowRisk);
       }
       
+      // Auto-assign doctor based on urgency and availability
+      let assignedStaffId = staff_id;
+      let assignedClinicId = clinic_id;
+      
+      if (!assignedStaffId) {
+        console.log("No staff assigned, finding best available doctor...");
+        
+        // Find available doctors based on urgency and current workload
+        let doctorQuery = `
+          SELECT cs.staff_id, u.name, cs.specialization, cs.experience_years, cs.clinic_id,
+                 COUNT(a.id) as current_appointments
+          FROM clinic_staff cs
+          JOIN users u ON cs.staff_id = u.id
+          LEFT JOIN appointments a ON cs.staff_id = a.staff_id 
+            AND a.status = 'scheduled' 
+            AND DATE(a.date) = DATE($1)
+          WHERE cs.position = 'doctor'
+        `;
+        
+        // Add specialization filter for urgent cases
+        if (urgency === 'urgent') {
+          doctorQuery += ` AND (cs.specialization ILIKE '%emergency%' OR cs.specialization ILIKE '%general%' OR cs.specialization IS NULL)`;
+        }
+        
+        doctorQuery += ` 
+          GROUP BY cs.staff_id, u.name, cs.specialization, cs.experience_years, cs.clinic_id
+          ORDER BY current_appointments ASC, cs.experience_years DESC, u.name ASC 
+          LIMIT 1`;
+        
+        try {
+          const doctorResult = await pool.query(doctorQuery, [finalDate]);
+          if (doctorResult.rows.length > 0) {
+            assignedStaffId = doctorResult.rows[0].staff_id;
+            assignedClinicId = doctorResult.rows[0].clinic_id;
+            console.log("Auto-assigned doctor:", doctorResult.rows[0].name, "ID:", assignedStaffId, "Current appointments:", doctorResult.rows[0].current_appointments);
+          } else {
+            console.log("No doctors available, appointment will be unassigned");
+          }
+        } catch (error) {
+          console.error("Error finding available doctor:", error);
+        }
+      }
+      
       console.log("About to insert appointment with symptoms:", symptoms);
-      console.log("Insert parameters:", [patient_id, staff_id, clinic_id, finalDate, urgency, noShowRisk, symptoms]);
+      console.log("Insert parameters:", [patient_id, assignedStaffId, assignedClinicId, finalDate, urgency, noShowRisk, symptoms]);
       
       const result = await pool.query(
         `INSERT INTO appointments (patient_id, staff_id, clinic_id, date, urgency, no_show_risk, symptoms, status) 
          VALUES ($1, $2, $3, $4, $5, $6, $7, 'scheduled') RETURNING *`,
-        [patient_id, staff_id, clinic_id, finalDate, urgency, noShowRisk, symptoms]
+        [patient_id, assignedStaffId, assignedClinicId, finalDate, urgency, noShowRisk, symptoms]
       );
       
       console.log("Appointment created successfully!");
       console.log("Created appointment:", result.rows[0]);
       console.log("Symptoms in created appointment:", result.rows[0].symptoms);
 
-      await Log.create({
-        action: "BOOKED",
-        userId: patient_id,
-        details: {
-          appointment: result.rows[0],
-          ai_results: {
-            urgency: urgency,
-            no_show_risk: noShowRisk
+      // Log to MongoDB (optional - don't fail if MongoDB is down)
+      try {
+        await Log.create({
+          action: "BOOKED",
+          userId: patient_id,
+          details: {
+            appointment: result.rows[0],
+            ai_results: {
+              urgency: urgency,
+              no_show_risk: noShowRisk
+            }
           }
-        }
-      });
+        });
+      } catch (logError) {
+        console.warn("MongoDB logging failed (appointment still created):", logError.message);
+      }
 
       res.json(result.rows[0]);
     } catch (err) {
@@ -205,12 +253,17 @@ router.get(
         console.log("All appointments found:", result.rows.length);
       }
 
-      await Log.create({
-        action: "FETCH_APPOINTMENTS",
-        userId: req.user.id,
-        role: req.user.role,
-        details: { count: result.rows.length },
-      });
+      // Log to MongoDB (optional)
+      try {
+        await Log.create({
+          action: "FETCH_APPOINTMENTS",
+          userId: req.user.id,
+          role: req.user.role,
+          details: { count: result.rows.length },
+        });
+      } catch (logError) {
+        console.warn("MongoDB logging failed:", logError.message);
+      }
 
       res.json(result.rows);
     } catch (err) {
@@ -284,16 +337,20 @@ router.post(
         ai_confidence: urgency === "urgent" ? "high" : "medium"
       };
       
-      // Log the recommendation
-      await Log.create({
-        action: "AI_RECOMMENDATION",
-        userId: userId,
-        details: {
-          recommendation: recommendation,
-          symptoms: symptoms,
-          patient_id: patient_id
-        }
-      });
+      // Log the recommendation (optional)
+      try {
+        await Log.create({
+          action: "AI_RECOMMENDATION",
+          userId: userId,
+          details: {
+            recommendation: recommendation,
+            symptoms: symptoms,
+            patient_id: patient_id
+          }
+        });
+      } catch (logError) {
+        console.warn("MongoDB logging failed:", logError.message);
+      }
       
       res.json(recommendation);
     } catch (err) {
@@ -305,8 +362,9 @@ router.post(
 
 /**
  * PUT /api/appointments/:id
- * - Patients can reschedule only their own appointments
- * - Staff/admin can reschedule any appointment
+ * - Patients can update only their own appointments
+ * - Staff/admin can update any appointment
+ * - Supports updating date, status, or both
  */
 router.put(
   "/:id",
@@ -314,18 +372,36 @@ router.put(
   roleMiddleware(["patient", "clinic_staff", "admin"]),
   async (req, res) => {
     try {
-      const { date } = req.body;
-      if (!date) {
-        return res.status(400).json({ error: "Date is required" });
+      const { date, status } = req.body;
+      
+      // Validate that at least one field is provided
+      if (!date && !status) {
+        return res.status(400).json({ error: "Date or status is required" });
       }
 
-      let query = "UPDATE appointments SET date=$1 WHERE id=$2 RETURNING *";
-      let params = [date, req.params.id];
+      // Build dynamic query based on provided fields
+      let updateFields = [];
+      let params = [];
+      let paramIndex = 1;
+
+      if (date) {
+        updateFields.push(`date = $${paramIndex}`);
+        params.push(date);
+        paramIndex++;
+      }
+
+      if (status) {
+        updateFields.push(`status = $${paramIndex}`);
+        params.push(status);
+        paramIndex++;
+      }
+
+      let query = `UPDATE appointments SET ${updateFields.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+      params.push(req.params.id);
 
       if (req.user.role === "patient") {
-        query =
-          "UPDATE appointments SET date=$1 WHERE id=$2 AND patient_id=$3 RETURNING *";
-        params = [date, req.params.id, req.user.id];
+        query = `UPDATE appointments SET ${updateFields.join(', ')} WHERE id = $${paramIndex} AND patient_id = $${paramIndex + 1} RETURNING *`;
+        params.push(req.user.id);
       }
 
       const result = await pool.query(query, params);
@@ -334,17 +410,26 @@ router.put(
         return res.status(404).json({ error: "Appointment not found" });
       }
 
-      await Log.create({
-        action: "RESCHEDULED",
-        userId: req.user.id,
-        role: req.user.role,
-        details: { appointment: result.rows[0] },
-      });
+      // Log to MongoDB (optional)
+      try {
+        const action = date && status ? "UPDATED" : date ? "RESCHEDULED" : "STATUS_CHANGED";
+        await Log.create({
+          action: action,
+          userId: req.user.id,
+          role: req.user.role,
+          details: { 
+            appointment: result.rows[0],
+            changes: { date, status }
+          },
+        });
+      } catch (logError) {
+        console.warn("MongoDB logging failed:", logError.message);
+      }
 
       res.json(result.rows[0]);
     } catch (err) {
-      console.error("Error rescheduling appointment:", err.message);
-      res.status(500).json({ error: "Failed to reschedule appointment" });
+      console.error("Error updating appointment:", err.message);
+      res.status(500).json({ error: "Failed to update appointment" });
     }
   }
 );
@@ -375,12 +460,17 @@ router.delete(
         return res.status(404).json({ error: "Appointment not found" });
       }
 
-      await Log.create({
-        action: "CANCELLED",
-        userId: req.user.id,
-        role: req.user.role,
-        details: { appointment: result.rows[0] },
-      });
+      // Log to MongoDB (optional)
+      try {
+        await Log.create({
+          action: "CANCELLED",
+          userId: req.user.id,
+          role: req.user.role,
+          details: { appointment: result.rows[0] },
+        });
+      } catch (logError) {
+        console.warn("MongoDB logging failed:", logError.message);
+      }
 
       res.json({ success: true });
     } catch (err) {
@@ -583,13 +673,17 @@ router.get(
       console.log("Found appointment:", appointment);
       console.log("Symptoms field:", appointment.symptoms);
 
-      // Log the access
-      await Log.create({
-        action: "VIEW_APPOINTMENT",
-        userId: req.user.id,
-        role: req.user.role,
-        details: { appointment_id: appointmentId },
-      });
+      // Log the access (optional)
+      try {
+        await Log.create({
+          action: "VIEW_APPOINTMENT",
+          userId: req.user.id,
+          role: req.user.role,
+          details: { appointment_id: appointmentId },
+        });
+      } catch (logError) {
+        console.warn("MongoDB logging failed:", logError.message);
+      }
 
       res.json(appointment);
     } catch (err) {

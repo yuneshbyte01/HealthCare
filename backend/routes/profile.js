@@ -203,6 +203,44 @@ router.get("/admin/me", authMiddleware, async (req, res) => {
 });
 
 /**
+ * GET /api/profile/clinic-staff/all
+ * Get all clinic staff profiles (admin only).
+ */
+router.get("/clinic-staff/all", authMiddleware, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: "Access denied. Admin role required." });
+    }
+
+    console.log("Fetching all clinic staff profiles");
+    
+    const result = await pool.query(`
+      SELECT 
+        cs.staff_id,
+        u.name,
+        u.email,
+        u.phone,
+        cs.position,
+        cs.specialization,
+        cs.license_number,
+        cs.experience_years,
+        cs.clinic_id,
+        c.name as clinic_name
+      FROM clinic_staff cs
+      JOIN users u ON cs.staff_id = u.id
+      LEFT JOIN clinics c ON cs.clinic_id = c.clinic_id
+      ORDER BY cs.experience_years DESC, u.name ASC
+    `);
+    
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error fetching all clinic staff profiles:", err.message);
+    res.status(500).json({ error: "Failed to fetch clinic staff profiles" });
+  }
+});
+
+/**
  * PUT /api/profile/patient
  * Update the patient profile of the currently logged-in user.
  */

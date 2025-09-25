@@ -12,10 +12,10 @@ export default function StaffProfile() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
     position: '',
-    department: '',
-    work_schedule: '',
-    phone: '',
-    address: ''
+    specialization: '',
+    license_number: '',
+    experience_years: '',
+    clinic_id: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -173,70 +173,69 @@ export default function StaffProfile() {
               />
             </div>
 
-            {/* Department */}
+            {/* Specialization */}
             <div>
               <label className="form-label">
-                {t('profile.department')} *
+                {t('profile.specialization')}
               </label>
               <input
                 type="text"
-                name="department"
-                value={profile.department}
+                name="specialization"
+                value={profile.specialization}
                 onChange={handleInputChange}
                 disabled={!editing}
                 className="form-input"
-                required
-                placeholder={t('profile.departmentPlaceholder', 'e.g., Cardiology, Emergency, General')}
+                placeholder={t('profile.specializationPlaceholder', 'e.g., Cardiology, Emergency Medicine, General Practice')}
               />
             </div>
 
-            {/* Work Schedule */}
+            {/* License Number */}
             <div>
               <label className="form-label">
-                {t('profile.workSchedule')}
+                {t('profile.licenseNumber')}
               </label>
               <input
                 type="text"
-                name="work_schedule"
-                value={profile.work_schedule}
+                name="license_number"
+                value={profile.license_number}
                 onChange={handleInputChange}
                 disabled={!editing}
                 className="form-input"
-                placeholder={t('profile.workSchedulePlaceholder', 'e.g., Monday-Friday 9AM-5PM')}
+                placeholder={t('profile.licenseNumberPlaceholder', 'Medical license number')}
               />
             </div>
 
-            {/* Phone */}
+            {/* Experience Years */}
             <div>
               <label className="form-label">
-                {t('profile.phone')} *
+                {t('profile.experienceYears')}
               </label>
               <input
-                type="tel"
-                name="phone"
-                value={profile.phone}
+                type="number"
+                name="experience_years"
+                value={profile.experience_years}
                 onChange={handleInputChange}
                 disabled={!editing}
                 className="form-input"
-                required
-                placeholder={t('profile.phonePlaceholder', 'Contact phone number')}
+                min="0"
+                max="50"
+                placeholder={t('profile.experienceYearsPlaceholder', 'Years of experience')}
               />
             </div>
 
-            {/* Address */}
-            <div className="md:col-span-2">
+            {/* Clinic ID */}
+            <div>
               <label className="form-label">
-                {t('profile.address')} *
+                {t('profile.clinicId')}
               </label>
-              <textarea
-                name="address"
-                value={profile.address}
+              <input
+                type="number"
+                name="clinic_id"
+                value={profile.clinic_id}
                 onChange={handleInputChange}
                 disabled={!editing}
                 className="form-input"
-                rows={3}
-                required
-                placeholder={t('profile.addressPlaceholder', 'Enter your full address')}
+                placeholder={t('profile.clinicIdPlaceholder', 'Clinic ID (usually 1)')}
               />
             </div>
           </div>

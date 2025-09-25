@@ -60,7 +60,9 @@
     "about": "बारेमा",
     "contact": "सम्पर्क",
     "settings": "सेटिङहरू",
-    "language": "भाषा"
+    "language": "भाषा",
+    "all": "सबै",
+    "unknown": "अज्ञात"
   },
 
   "home": {
@@ -147,6 +149,18 @@
     },
     "staff": {
       "title": "कर्मचारी ड्यासबोर्ड",
+      "myAppointmentsToday": "आजका मेरा भेटघाटहरू",
+      "myCompletedToday": "आज पूरा गरेका",
+      "urgentCases": "तत्कालका केसहरू",
+      "completionRate": "पूर्णता दर",
+      "myNextAppointment": "मेरो अर्को भेटघाट",
+      "systemAlerts": "प्रणाली सचेतनाहरू",
+      "quickActions": "छिटो कार्यहरू",
+      "recentActivity": "हालको गतिविधि",
+      "noUpcomingAppointments": "कुनै आगामी भेटघाटहरू छैनन्",
+      "noUrgentCases": "कुनै तत्कालका केसहरू छैनन्",
+      "noAlerts": "कुनै सचेतनाहरू छैनन्",
+      "noRecentActivity": "कुनै हालको गतिविधि छैन",
       "urgentCases": "तत्कालका केसहरू",
       "alertsPreview": "सचेतना पूर्वावलोकन",
       "todayAppointments": "आजका भेटघाटहरू",
@@ -164,7 +178,28 @@
       "totalUsers": "कुल प्रयोगकर्ताहरू",
       "totalAppointments": "कुल भेटघाटहरू",
       "systemUptime": "प्रणाली अपटाइम",
-      "aiModelStatus": "एआई मोडेल स्थिति"
+      "aiModelStatus": "एआई मोडेल स्थिति",
+      "systemHealth": "प्रणाली स्वास्थ्य",
+      "activeUsers": "सक्रिय प्रयोगकर्ताहरू",
+      "activeClinics": "सक्रिय क्लिनिकहरू",
+      "staffMembers": "कर्मचारी सदस्यहरू",
+      "overallStatus": "समग्र स्थिति",
+      "triageModel": "ट्रायज मोडेल",
+      "noShowModel": "नो-शो मोडेल",
+      "accuracy": "सटीकता",
+      "lastTrained": "अन्तिम प्रशिक्षित",
+      "systemAlerts": "प्रणाली सचेतनाहरू",
+      "quickActions": "छिटो कार्यहरू",
+      "recentActivity": "हालको गतिविधि",
+      "noAlerts": "कुनै सचेतनाहरू छैनन्",
+      "noRecentActivity": "कुनै हालको गतिविधि छैन",
+      "systemQuiet": "प्रणाली शान्त रूपमा चलिरहेको छ",
+      "clinicStaff": "क्लिनिक कर्मचारी",
+      "moreStaff": "थप कर्मचारी सदस्यहरू",
+      "noStaff": "कुनै क्लिनिक कर्मचारी छैनन्",
+      "addStaffFirst": "सुरु गर्न क्लिनिक कर्मचारी थप्नुहोस्",
+      "uptime": "अपटाइम",
+      "responseTime": "प्रतिक्रिया समय"
     }
   },
 
@@ -228,7 +263,15 @@
     "dateRequired": "मिति आवश्यक छ",
     "timeRequired": "समय आवश्यक छ",
     "clinicRequired": "क्लिनिक आवश्यक छ",
-    "staffRequired": "कर्मचारी आवश्यक छ"
+    "staffRequired": "कर्मचारी आवश्यक छ",
+    "routine": "नियमित",
+    "moderate": "मध्यम",
+    "rescheduled": "पुन: निर्धारण",
+    "rescheduleAppointment": "अपोइन्टमेन्ट पुन: निर्धारण गर्नुहोस्",
+    "currentDate": "हालको मिति र समय",
+    "newDate": "नयाँ मिति र समय",
+    "selectFutureDate": "कृपया भविष्यको मिति र समय छान्नुहोस्",
+    "rescheduleStatus": "पुन: निर्धारण स्थिति"
   },
 
   "profile": {
@@ -248,6 +291,14 @@
     "department": "विभाग",
     "workSchedule": "कार्य तालिका",
     "permissions": "अनुमतिहरू",
+    "specialization": "विशेषज्ञता",
+    "licenseNumber": "लाइसेन्स नम्बर",
+    "experienceYears": "अनुभव (वर्ष)",
+    "clinicId": "क्लिनिक आईडी",
+    "specializationPlaceholder": "जस्तै: हृदय रोग, आपत्कालीन चिकित्सा, सामान्य अभ्यास",
+    "licenseNumberPlaceholder": "चिकित्सा लाइसेन्स नम्बर",
+    "experienceYearsPlaceholder": "अनुभवको वर्ष",
+    "clinicIdPlaceholder": "क्लिनिक आईडी (सामान्यतया १)",
     "saveProfile": "प्रोफाइल सुरक्षित गर्नुहोस्",
     "updateProfile": "प्रोफाइल अपडेट गर्नुहोस्",
     "profileCreated": "प्रोफाइल सफलतापूर्वक बनाइयो",

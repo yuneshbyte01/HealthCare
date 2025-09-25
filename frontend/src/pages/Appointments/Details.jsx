@@ -18,6 +18,9 @@ export default function AppointmentDetails() {
   const [error, setError] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState('');
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [newDate, setNewDate] = useState('');
+  const [rescheduleLoading, setRescheduleLoading] = useState(false);
 
   useEffect(() => {
     fetchAppointmentDetails();
@@ -71,6 +74,40 @@ export default function AppointmentDetails() {
     } finally {
       setUpdating(false);
     }
+  };
+
+  const handleReschedule = async () => {
+    if (!newDate) {
+      setMessage(t('appointments.dateRequired', 'Please select a new date and time'));
+      return;
+    }
+
+    setRescheduleLoading(true);
+    try {
+      await API.put(`/appointments/${id}`, { 
+        date: newDate
+      });
+      setMessage(t('appointments.appointmentRescheduled', 'Appointment rescheduled successfully'));
+      setShowRescheduleModal(false);
+      setNewDate('');
+      fetchAppointmentDetails(); // Refresh data
+    } catch (error) {
+      console.error('Error rescheduling appointment:', error);
+      setMessage(t('errors.unexpectedError'));
+    } finally {
+      setRescheduleLoading(false);
+    }
+  };
+
+  const openRescheduleModal = () => {
+    // Set current appointment date as default
+    if (appointment?.date) {
+      const currentDate = new Date(appointment.date);
+      // Format for datetime-local input (YYYY-MM-DDTHH:MM)
+      const formattedDate = currentDate.toISOString().slice(0, 16);
+      setNewDate(formattedDate);
+    }
+    setShowRescheduleModal(true);
   };
 
   const getStatusColor = (status) => {
@@ -184,6 +221,16 @@ export default function AppointmentDetails() {
                     {t(`appointments.${appointment.urgency}`)}
                   </span>
                 </div>
+                {/* Show rescheduled indicator if appointment was updated after creation */}
+                {appointment.last_updated && appointment.created_at && 
+                 new Date(appointment.last_updated) > new Date(appointment.created_at) && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">{t('appointments.rescheduleStatus', 'Reschedule Status')}</label>
+                    <span className="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                      {t('appointments.rescheduled', 'Rescheduled')}
+                    </span>
+                  </div>
+                )}
                 <div>
                   <label className="text-sm font-medium text-gray-500">{t('appointments.staff')}</label>
                   <p className="text-lg text-gray-900">{appointment.staff_name || appointment.staff_id || t('appointments.notAssigned', 'Not assigned')}</p>
@@ -280,7 +327,7 @@ export default function AppointmentDetails() {
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('common.actions', 'Actions')}</h2>
               <div className="space-y-3">
-                {(role === 'clinic_staff' || role === 'admin') && appointment.status === 'scheduled' && (
+                {(role === 'clinic_staff' || role === 'admin') && (appointment.status === 'scheduled' || appointment.status === 'rescheduled') && (
                   <>
                     <button
                       onClick={() => handleStatusUpdate('completed')}
@@ -299,7 +346,7 @@ export default function AppointmentDetails() {
                   </>
                 )}
 
-                {role === 'patient' && appointment.status === 'scheduled' && (
+                {role === 'patient' && (appointment.status === 'scheduled' || appointment.status === 'rescheduled') && (
                   <>
                     <button
                       onClick={handleCancelAppointment}
@@ -308,12 +355,13 @@ export default function AppointmentDetails() {
                     >
                       {t('appointments.cancel')}
                     </button>
-                    <Link
-                      to={`/appointments/reschedule/${appointment.id}`}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center block"
+                    <button
+                      onClick={openRescheduleModal}
+                      disabled={updating}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                     >
                       {t('appointments.reschedule')}
-                    </Link>
+                    </button>
                   </>
                 )}
 
@@ -328,6 +376,74 @@ export default function AppointmentDetails() {
           </div>
         </div>
       </div>
+
+      {/* Reschedule Modal */}
+      {showRescheduleModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {t('appointments.rescheduleAppointment', 'Reschedule Appointment')}
+              </h3>
+            </div>
+            
+            <div className="px-6 py-4">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('appointments.currentDate', 'Current Date & Time')}
+                </label>
+                <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
+                  {appointment && new Date(appointment.date).toLocaleString()}
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <label htmlFor="newDate" className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('appointments.newDate', 'New Date & Time')} *
+                </label>
+                <input
+                  type="datetime-local"
+                  id="newDate"
+                  value={newDate}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  min={new Date().toISOString().slice(0, 16)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {t('appointments.selectFutureDate', 'Please select a future date and time')}
+                </p>
+              </div>
+            </div>
+            
+            <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowRescheduleModal(false);
+                  setNewDate('');
+                }}
+                disabled={rescheduleLoading}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                {t('common.cancel', 'Cancel')}
+              </button>
+              <button
+                onClick={handleReschedule}
+                disabled={rescheduleLoading || !newDate}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 flex items-center"
+              >
+                {rescheduleLoading && (
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                {t('appointments.reschedule', 'Reschedule')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
